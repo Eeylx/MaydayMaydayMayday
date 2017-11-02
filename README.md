@@ -18,7 +18,7 @@ I need help! T^T
 
 
 ## 配置环境
-
+[linux 更换apt-get源](配置环境/更换apt-get源/更换apt-get源.md)
 
 
 ## 各种算法
