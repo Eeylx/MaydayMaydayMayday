@@ -31,15 +31,15 @@ See [Getting Started with the LLVM System](http://llvm.org/docs/GettingStarted.h
 If you want to install it manually, please refer to the official [LLVM Getting Started documentation](http://releases.llvm.org/3.4.2/docs/GettingStarted.html).
 
 1. ##### 打开apt-get资源文件
-	   gedit /etc/apt/sources.list
+       gedit /etc/apt/sources.list
 
 2. ##### 在source.lsit中添加以下信息后保存关闭:	
-	   deb http://llvm.org/apt/trusty/ llvm-toolchain-trusty-3.4 main  
-	   deb-src http://llvm.org/apt/trusty/ llvm-toolchain-trusty-3.4 main
+       deb http://llvm.org/apt/trusty/ llvm-toolchain-trusty-3.4 main  
+       deb-src http://llvm.org/apt/trusty/ llvm-toolchain-trusty-3.4 main
 
 3. ##### 添加仓库密钥
-	   wget -O - http://llvm.org/apt/llvm-snapshot.gpg.key|sudo apt-key add -
-	   sudo apt-get update
+	    wget -O - http://llvm.org/apt/llvm-snapshot.gpg.key|sudo apt-key add -
+	    sudo apt-get update
 
 4. ##### 安装llvm3.4
 	   sudo apt-get install
@@ -49,7 +49,7 @@ If you want to install it manually, please refer to the official [LLVM Getting S
   + [x] `llvm-3.4-tools`
 
 5. ##### Finally, make sure llvm-config is in your path
-	   sudo ln -sf /usr/bin/llvm-config-3.4 /usr/bin/llvm-config
+       sudo ln -sf /usr/bin/llvm-config-3.4 /usr/bin/llvm-config
 
 
 ## 3. Install constraint solver(s)
@@ -59,14 +59,14 @@ KLEE supports multiple different constraint solvers. You must install at least o
 
 1. #### [STP](https://github.com/stp/stp) Historically KLEE was built around STP so support for this solver is the most stable. For build instructions, see [here](http://klee.github.io/releases/docs/v1.4.0/build-stp/).
   + ##### STP has a few external dependencies they are listed below as an install command for Ubuntu 14.04LTS.
-		 sudo apt-get install
-      - [x] `cmake` 安装3.0及以上版本, 可以参考下文[可能遇到的问题](##### 遇到的问题及可行的解决方法)部分
-      - [x] `bison`
-      - [x] `flex`
-      - [x] `libboost-all-dev`
-      - [x] `python`
-      - [x] `perl`
-      - [x] `zlib1g-dev`
+        sudo apt-get install
+    - [x] `cmake` 安装3.0及以上版本, 可以参考下文[可能遇到的问题](##### 遇到的问题及可行的解决方法)部分
+    - [x] `bison`
+    - [x] `flex`
+    - [x] `libboost-all-dev`
+    - [x] `python`
+    - [x] `perl`
+    - [x] `zlib1g-dev`
 
   + ##### 装完上述软件包后执行以下步骤
 		 git clone https://github.com/stp/minisat.git
@@ -197,7 +197,7 @@ For example if KLEE was being built with STP, the POSIX runtime, klee-uclibc and
 	  -DENABLE_TCMALLOC=ON \                         // 7. tcmalloc
 	  <KLEE_SRC_DIRECTORY>                           // 8. get Klee source
 	
-for copy
+For copy (but only for me)
 
 	cmake -DENABLE_SOLVER_STP=ON -DENABLE_POSIX_RUNTIME=ON -DENABLE_KLEE_UCLIBC=ON -DKLEE_UCLIBC_PATH=/home/eeyore/work/klee-uclibc -DGTEST_SRC_DIR=/home/eeyore/work/dependencies/googletest-release-1.7.0 -DENABLE_SYSTEM_TESTS=ON -DENABLE_UNIT_TESTS=ON -DENABLE_TCMALLOC=ON /home/eeyore/work/klee
 
