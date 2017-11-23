@@ -42,6 +42,7 @@ I need help! T^T
     - [ ] [官方文档](https://source.android.com/source/downloading)
     - [ ] [某人的博客](http://www.jianshu.com/p/aeaceda41798)
   + [ ] [终端翻墙 shadowsocks+proxychains4](http://blog.csdn.net/u014021258/article/details/53463297)
+    - [官方文档](https://gist.github.com/marcinwol/b8e502eede230cc33c43)
 
   + [ ] [KMP算法](http://www.ruanyifeng.com/blog/2013/05/Knuth%E2%80%93Morris%E2%80%93Pratt_algorithm.html)
   + [ ] [Boyer-Moore算法](http://www.ruanyifeng.com/blog/2013/05/boyer-moore_string_search_algorithm.html)
