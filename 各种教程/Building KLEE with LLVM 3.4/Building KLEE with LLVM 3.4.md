@@ -241,3 +241,20 @@ If KLEE was configured with unit tests enabled then you can build and run the un
 
 
 > NOTE: For testing real applications (e.g. Coreutils), you may need to increase your system’s open file limit (ulimit -n). Something between 10000 and 999999 should work. In most cases, the hard limit will have to be increased first, so it is best to directly edit the /etc/security/limits.conf file.
+
+
+## Extra
+  + clang
+    - 如果 `clang` 命令不能使用, 被告知有多个clang版本存在, 可以尝试将 `clang` 命令替换为 `clang-3.4` 
+    - 可添加链接指定 `clang` 默认使用clang-3.4版本
+
+          ln -s /usr/bin/clang-3.4 /usr/bin/clang
+
+  + klee 
+    - 编译好的klee命令可能不能在任意目录内使用(或必须手动指定目录), 可添加链接使其在任意目录下均可用
+    
+          ln -s /your_klee_build_dir/bin/klee /usr/bin/klee
+          ln -s /your_klee_build_dir/bin/ktest-tool /usr/bin/ktest-tool
+          ...
+          
+    - 该目录下有多个可执行文件, 可以按需添加链接
