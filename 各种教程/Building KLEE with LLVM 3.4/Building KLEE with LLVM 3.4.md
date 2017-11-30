@@ -2,7 +2,7 @@
 ## [Klee v1.4.0 官方文档列表](http://klee.github.io/releases/docs/v1.4.0/docs/)
 # [BUILDING KLEE(recommended) with LLVM 3.4](http://klee.github.io/releases/docs/v1.4.0/build-llvm34/)
 > 本教程参考此网页 ↑↑↑  
-> ~~上面那个简直是个坑爹的假网址!各种缺命令!~~ 具体步骤还需要辅助参考[此文档](http://klee.github.io/releases/docs/v1.3.0/build-llvm34/)
+> 上面那个网址 ~~是个假网址!缺命令!~~ 有部分错误, 具体步骤还需要辅助参考[此文档](http://klee.github.io/releases/docs/v1.3.0/build-llvm34/)  
 > 开始之前先去换个国内源吧, 具体方法请自行Google或参考[此网页](https://github.com/Eeylx/MaydayMaydayMayday/blob/master/%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83/%E6%9B%B4%E6%8D%A2apt-get%E6%BA%90/%E6%9B%B4%E6%8D%A2apt-get%E6%BA%90.md)
 
 ### 环境:
@@ -253,8 +253,8 @@ If KLEE was configured with unit tests enabled then you can build and run the un
   + klee 
     - 编译好的klee命令可能不能在任意目录内使用(或必须手动指定目录), 可添加链接使其在任意目录下均可用
     
-          ln -s /your_klee_build_dir/bin/klee /usr/bin/klee
-          ln -s /your_klee_build_dir/bin/ktest-tool /usr/bin/ktest-tool
+          ln -s /path-to-your-klee-build-dir/bin/klee /usr/bin/klee
+          ln -s /path-to-your-klee-build-dir/bin/ktest-tool /usr/bin/ktest-tool
           ...
           
     - 该目录下有多个可执行文件, 可以按需添加链接
