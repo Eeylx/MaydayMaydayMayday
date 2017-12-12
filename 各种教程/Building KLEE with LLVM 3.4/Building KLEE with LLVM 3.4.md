@@ -2,7 +2,7 @@
 ## [Klee v1.4.0 官方文档列表](http://klee.github.io/releases/docs/v1.4.0/docs/)
 # [BUILDING KLEE(recommended) with LLVM 3.4](http://klee.github.io/releases/docs/v1.4.0/build-llvm34/)
 > 本教程参考此网页 ↑↑↑  
-> 上面那个网址 ~~是个假网址!缺命令!~~ 有部分错误, 具体步骤还需要辅助参考[此文档](http://klee.github.io/releases/docs/v1.3.0/build-llvm34/)  
+> 上面那个网址 ~~是个假网址!~~ 有部分错误, 具体步骤还需要辅助参考[此文档](http://klee.github.io/releases/docs/v1.3.0/build-llvm34/)  
 > 开始之前先去换个国内源吧, 具体方法请自行Google或参考[此网页](https://github.com/Eeylx/MaydayMaydayMayday/blob/master/%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83/%E6%9B%B4%E6%8D%A2apt-get%E6%BA%90/%E6%9B%B4%E6%8D%A2apt-get%E6%BA%90.md)
 
 ### 环境:
