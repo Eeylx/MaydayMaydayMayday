@@ -6,7 +6,7 @@
 > 开始之前先去换个国内源吧, 具体方法请自行Google或参考[此网页](https://github.com/Eeylx/MaydayMaydayMayday/blob/master/%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83/%E6%9B%B4%E6%8D%A2apt-get%E6%BA%90/%E6%9B%B4%E6%8D%A2apt-get%E6%BA%90.md)
 
 ### 环境:
-    Ubuntu 14.04
+    Ubuntu 14.04 64-bit
     gcc / g++ 4.8 or later
     cmake 3.0 or later
     
