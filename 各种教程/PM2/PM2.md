@@ -78,7 +78,7 @@ Node.js是单线程运行的, 该命令可以充分利用多cpu的机器
 
 
 ## 4. PM2 常用命令 
-其他命令详见[备忘录](#%E9%99%84%E5%BD%951--%E5%A4%87%E5%BF%98%E5%BD%95)
+其他命令详见[备忘录](#备忘录)
 
     // 查看
     pm2 list               # Display all processes status
@@ -131,7 +131,7 @@ Node.js是单线程运行的, 该命令可以充分利用多cpu的机器
 > 当更新过Node.js后, pm2的路径可能会发生改变, 需要更新启动脚本
 
 
-## 附录1 : 备忘录
+## <span id="备忘录">附录1 : 备忘录</span>
 PM2中一些值得了解的命令 : 
 ```
 # Fork mode
@@ -229,3 +229,4 @@ PM2支持的脚本 :
 1. [PM2 Quick Start](http://pm2.keymetrics.io/docs/usage/quick-start/) (官网)
 1. [PM2实用入门指南](https://segmentfault.com/a/1190000006793571) (SegmentFault)
 2. [pm2常用命令](https://www.jianshu.com/p/e709b71f12da) (简书)
+
