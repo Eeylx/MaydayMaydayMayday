@@ -1,27 +1,22 @@
 # 更换apt-get源
-
 在使用apt-get命令时, ubuntu会默认使用官方的源, 往往下载的速度非常慢  
 我们可以通过换成一些中间的节点来进行下载, 比如阿里源, 清华源等等, 速度会比直接从官方源下载快很多
 
 ### 环境:  
-
     ubuntu 14.04
   
 
 ## 1. 备份源
-
     cd /etc/apt
     
     cp sources.list sources.list.bak
 
 
 ## 2. 更换源
-
 2.1 和 2.2 选一种即可  
 如果是server版没有图形界面, 可以选用2.1, 有图形界面的建议用2.2中的方法
 
 ### 2.1 修改源
-
     vi sources.list
     
     :%s/us.archive/cn.archive/g
@@ -37,7 +32,6 @@ s(字母s), 表示替换
 这样, 就将apt-get的源更改为国内的源了  
 
 ### 2.2 替换源
-
 使用[清华大学Tuna源](https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu/), 选择符合自己版本的源  
 取得root权限后(或者在命令前加sudo), 输入
 

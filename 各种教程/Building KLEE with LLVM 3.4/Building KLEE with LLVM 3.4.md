@@ -12,7 +12,6 @@
     
 
 ## 1. Install dependencies
-
 	sudo apt-get install
   + [x] `gcc/g++ 4.8 or later`
   + [x] `curl`
@@ -26,7 +25,6 @@
 
 
 ## 2. Install LLVM 3.4
-
 See [Getting Started with the LLVM System](http://llvm.org/docs/GettingStarted.html) for more information.  
 If you want to install it manually, please refer to the official [LLVM Getting Started documentation](http://releases.llvm.org/3.4.2/docs/GettingStarted.html).
 
@@ -53,7 +51,6 @@ If you want to install it manually, please refer to the official [LLVM Getting S
 
 
 ## 3. Install constraint solver(s)
-
 KLEE supports multiple different constraint solvers. You must install at least one to build KLEE.
 >下列 `STP` `Z3` `metaSMT` 三选一, 这里安装STP
 
@@ -120,7 +117,6 @@ KLEE supports multiple different constraint solvers. You must install at least o
 
 
 ## 4. (Optional) Build uclibc and the POSIX environment model
-
 By default, KLEE works on closed programs (programs that don’t use any external code such as C library functions). However, if you want to use KLEE to run real programs you will want to enable the KLEE POSIX runtime, which is built on top of the [uClibc](https://uclibc.org/) C library.  
 
 To build klee-uclibc run:
@@ -135,7 +131,6 @@ To tell KLEE to use klee-uclibc and use the POSIX runtime pass `-DENABLE_POSIX_R
 
 
 ## 5. (Optional) Get Google test sources
-
 For unit tests we use the Google test libraries. If you don’t want to run the unit tests you can skip this step but you will need to pass -DENABLE_UNIT_TESTS=OFF to CMake when configuring KLEE in step 9.
 
 We depend on a version 1.7.0 right now so grab the sources for it.
@@ -147,7 +142,6 @@ This will create a directory called googletest-release-1.7.0.
 
 
 ## 6. (Optional) Install lit
-
 For testing the lit tool is used. If you LLVM from a build tree you can skip this step as the build system will try to use llvm-lit in the directory containing the LLVM binaries.
 
 If you don’t want to run the tests you can skip this step but you will need to pass `-DENABLE_UNIT_TESTS=OFF` and `-DENABLE_SYSTEM_TESTS=OFF` to CMake when configuring KLEE in step 9.
@@ -156,7 +150,6 @@ If you don’t want to run the tests you can skip this step but you will need to
 
 
 ## 7. (Optional) Install tcmalloc
-
 By default, KLEE uses malloc_info() to observe and to restrict its memory usage. Due to limitations of malloc_info(), the maximum limit is set to 2 GB. To support bigger limits, KLEE can use TCMalloc as an alternative allocator. It is thus necessary to install TCMalloc:
 
 	sudo apt-get install 
@@ -167,12 +160,10 @@ When configuring KLEE in step 9 pass `-DENABLE_TCMALLOC=ON` to CMake when config
 
 
 ## 8. Get KLEE source
-
 	git clone https://github.com/klee/klee.git
 
 
 ## 9. Config KLEE
-
 KLEE must be built “out of source” so first make a binary build directory. You can create this where ever you like.
 
 	mkdir klee_build_dir
@@ -207,7 +198,6 @@ Where `<KLEE_UCLIBC_SOURCE_DIR>` is the absolute path the klee-uclibc source tre
 
 
 ## 10. Build KLEE
-
 From the klee_build_dir directory created in the previous step run.
 
 	make
@@ -216,7 +206,6 @@ From the klee_build_dir directory created in the previous step run.
 
 
 ## 11. (Optional) Run the main regression test suite
-
 If KLEE was configured with system tests enabled then you can run them like this.
 
 	make systemtests
@@ -231,14 +220,12 @@ This way you can run individual tests or subsets of the suite:
 
 
 ## 12. (Optional) Build and run the unit test
-
 If KLEE was configured with unit tests enabled then you can build and run the unit tests like this.
 
 	make unittests
 
 
 ## 13. You're ready to go! Check the [Tutorials](http://klee.github.io/releases/docs/v1.4.0/tutorials/) page to try KLEE
-
 
 > NOTE: For testing real applications (e.g. Coreutils), you may need to increase your system’s open file limit (ulimit -n). Something between 10000 and 999999 should work. In most cases, the hard limit will have to be increased first, so it is best to directly edit the /etc/security/limits.conf file.
 

@@ -24,12 +24,12 @@ I need help! T^T
 
 ## 配置环境
 + ### Linux
-    [linux 更换apt-get源](配置环境/Linux/更换apt-get源/更换apt-get源.md)  
-    [更换make版本](配置环境/Linux/更换make版本/更换make版本.md)  
+    [linux 更换apt-get源](./配置环境/Linux/更换apt-get源/更换apt-get源.md)  
+    [更换make版本](./配置环境/Linux/更换make版本/更换make版本.md)  
     
 
 + ### Windows
-    [安装Node.js]()
+    [安装Node.js](./配置环境/Windows/安装Node.js/安装Node.js.md)
 
 
 ## 各种算法
