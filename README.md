@@ -50,8 +50,13 @@ I need help! T^T
   + [ ] [Boyer-Moore算法](http://www.ruanyifeng.com/blog/2013/05/boyer-moore_string_search_algorithm.html)
   + [ ] [Myers算法](http://cjting.me/misc/how-git-generate-diff/)
   + [ ] [爬山算法]()
+  + [ ] [遗传算法]()
   + [ ] [蚁群算法]()
   + [ ] [模拟退火算法]()
+  
+  + [ ] [符号执行]()
+  + [ ] [约束求解]()
+  
 ### done
   - [x] 构建Klee工具
   - [x] 更换make版本
