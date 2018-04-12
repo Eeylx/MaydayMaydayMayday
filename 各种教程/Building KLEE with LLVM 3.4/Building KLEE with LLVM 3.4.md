@@ -36,8 +36,8 @@ If you want to install it manually, please refer to the official [LLVM Getting S
        deb-src http://llvm.org/apt/trusty/ llvm-toolchain-trusty-3.4 main
 
 3. ##### 添加仓库密钥
-	    wget -O - http://llvm.org/apt/llvm-snapshot.gpg.key|sudo apt-key add -
-	    sudo apt-get update
+	   wget -O - http://llvm.org/apt/llvm-snapshot.gpg.key|sudo apt-key add -
+	   sudo apt-get update
 
 4. ##### 安装llvm3.4
 	   sudo apt-get install
@@ -76,11 +76,11 @@ KLEE supports multiple different constraint solvers. You must install at least o
 
 		 git clone https://github.com/stp/stp.git
 		 cd stp
-		 # 不要执行下一步, 2.2.0版本可以cmake, 2.1.2版本有问题, 详情请参见 https://github.com/stp/stp/issues/153
-		 # git checkout tags/2.1.2
+         # 下一步切换到2.1.2版本, 如果执行之后后续的install不成功, 可以切换到2.2.0版本. 相关问题: https://github.com/stp/stp/issues/153 
+		 git checkout tags/2.1.2
 		 mkdir build
 		 cd build
-		 cmake -DBUILD_SHARED_LIBS:BOOL=OFF DENABLE_PYTHON_INTERFACE:BOOL=OFF ..
+         cmake -DBUILD_SHARED_LIBS:BOOL=OFF -DENABLE_PYTHON_INTERFACE:BOOL=OFF ..
 		 make
 		 sudo make install
 		 cd ..
@@ -227,7 +227,11 @@ If KLEE was configured with unit tests enabled then you can build and run the un
 
 ## 13. You're ready to go! Check the [Tutorials](http://klee.github.io/releases/docs/v1.4.0/tutorials/) page to try KLEE
 
-> NOTE: For testing real applications (e.g. Coreutils), you may need to increase your system’s open file limit (ulimit -n). Something between 10000 and 999999 should work. In most cases, the hard limit will have to be increased first, so it is best to directly edit the /etc/security/limits.conf file.
+
+## NOTE 
+For testing real applications (e.g. Coreutils), you may need to increase your system’s open file limit (ulimit -n). Something between 10000 and 999999 should work. In most cases, the hard limit will have to be increased first, so it is best to directly edit the /etc/security/limits.conf file. or :
+
+    ulimit -s unlimited
 
 
 ## Extra
