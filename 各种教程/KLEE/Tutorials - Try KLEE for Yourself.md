@@ -270,7 +270,7 @@ wllvm提供了4个python可执行文件:
 
     Written by Torbjorn Granlund and Richard M. Stallman.
 
-{...}省略对上面部分的解释
+你可能会注意到我们获得的是可执行文件而不是LLVM的bitcode文件, 这是因为WLLVM分两步工作. WLLVM首先调用标准编译器, 然后对每个obj文件调用bitcode编译器生成LLVM的bitcode文件. WLLVM stores the location of the generated bitcode files in a dedicated section of the object file. When object files are linked together, the locations are concatenated to save the locations of all constituent files. 当构建完成后, 可以使用WLLVM的实用工具extract-bc读取专用部分的内容, 并将所有bitcode链接到单个的完整bitcode文件中. 
 
 要获得所有Coreutils的LLVM bitcode版本，我们可以在所有可执行文件上调用extract-bc : 
 
@@ -280,7 +280,9 @@ wllvm提供了4个python可执行文件:
     -rw-rw-r-- 1 klee klee 543052 Nov 21 12:03 ls.bc
 
 ### Step 4 : Using KLEE as an interpreter
-{...}
+下面的例子是如何使用KLEE运行与之前相同的cat命令. 
+> 这一步你需要使用uclibc和POSIX参数, 如果之前跳过了相关步骤, 现在需要补上T^T.  
+> 链接: [(Optional) Build uclibc and the POSIX environment model](https://github.com/Eeylx/MaydayMaydayMayday/blob/master/%E5%90%84%E7%A7%8D%E6%95%99%E7%A8%8B/KLEE/Building%20KLEE%20with%20LLVM%203.4.md#4-optional-build-uclibc-and-the-posix-environment-model)
 
     src$ klee --libc=uclibc --posix-runtime ./cat.bc --version
     KLEE: NOTE: Using klee-uclibc : /usr/local/lib/klee/runtime/klee-uclibc.bca
@@ -309,10 +311,17 @@ wllvm提供了4个python可执行文件:
     KLEE: done: completed paths = 1
     KLEE: done: generated tests = 1
 
-{...}
+{...} 省略了对上面例子的解释, 大致意思是:   
+命令的格式是 klee命令 + klee的参数 + 要执行的命令的.bc文件 + 命令的参数  
+`--libc=uClibc`模拟正常的C库, `--posix--runtime`模拟操作系统级别的POSIX库  
+有一些KLEE输出的附加信息, 这些警告大部分都是无害的, 可以无视掉
+
+一般来说，对于相同的警告, KLEE只会警告一次. 警告也会记录到KLEE输出目录中的warnings.txt文件中.
 
 ### Step 5 : Introducing symbolic data to an application
-{...}
+上面是使用KLEE正常的解释程序, 下面的例子展示KLEE如何将部分输入符号化, 更详尽的探索程序.
+
+以echo命令为例, 当使用uclibc和POSIX运行时, KLEE会将程序的`main()`函数替换成`klee_init_env()`函数. 这个函数改变了应用程序的命令处理行为, 特别是支持符号参数的构造. 例如, 传递`--help`参数时会产生如下输出: 
 
     src$ klee --libc=uclibc --posix-runtime ./echo.bc --help
     ...
@@ -322,23 +331,111 @@ wllvm提供了4个python可执行文件:
                                   MAX arguments, each with maximum length N
       -sym-files <NUM> <N>      - Make NUM symbolic files ('A', 'B', 'C', etc.),
                                   each with size N
-        -sym-stdin <N>            - Make stdin symbolic with size N.
-        -sym-stdout               - Make stdout symbolic.
-        -max-fail <N>             - Allow up to N injected failures
-        -fd-fail                  - Shortcut for '-max-fail 1'
+      -sym-stdin <N>            - Make stdin symbolic with size N.
+      -sym-stdout               - Make stdout symbolic.
+      -max-fail <N>             - Allow up to N injected failures
+      -fd-fail                  - Shortcut for '-max-fail 1'
     ...
 
-{...}
+下面的例子使用长度为3个字符的符号参数运行echo: 
  
+    src$ klee --libc=uclibc --posix-runtime ./echo.bc --sym-arg 3
+    KLEE: NOTE: Using klee-uclibc : /usr/local/lib/klee/runtime/klee-uclibc.bca
+    KLEE: NOTE: Using model: /usr/local/lib/klee/runtime/libkleeRuntimePOSIX.bca
+    KLEE: output directory is "/home/klee/coreutils-6.11/obj-llvm/src/./klee-out-1"
+    Using STP solver backend
+    KLEE: WARNING ONCE: function "vasnprintf" has inline asm
+    KLEE: WARNING: undefined reference to function: __ctype_b_loc
+    KLEE: WARNING: undefined reference to function: klee_posix_prefer_cex
+    KLEE: WARNING: executable has module level assembly (ignoring)
+    KLEE: WARNING ONCE: calling external: syscall(16, 0, 21505, 39407520)
+    KLEE: WARNING ONCE: calling __user_main with extra arguments.
+    ..
+    KLEE: WARNING: calling close_stdout with extra arguments.
+    ...
+    KLEE: WARNING ONCE: calling external: printf(42797984, 41639952)
+    ..
+    KLEE: WARNING ONCE: calling external: vprintf(41640400, 52740448)
+    ..
+    Echo the STRING(s) to standard output.                                      // --help
 
-{...}
+        -n             do not output the trailing newline
+        -e             enable interpretation of backslash escapes
+        -E             disable interpretation of backslash escapes (default)
+            --help     display this help and exit
+            --version  output version information and exit
+    Usage: ./echo.bc [OPTION]... [STRING]...
+    echo (GNU coreutils) 6.11                                                       // --version
+    Copyright (C) 2008 Free Software Foundation, Inc.                               // --version
+    If -e is in effect, the following sequences are recognized:
 
-{...}
-### Step 6 : Visualizing KLEE’s progress with kcachegrind
+      \0NNN   the character whose ASCII code is NNN (octal)                     // --help
+      \\     backslash
+      \a     alert (BEL)
+      \b     backspace
 
+    License GPLv3+: GNU GPL version 3 or later                                      // --version
+    This is free software: you are free to change and redistribute it.              // --version
+    There is NO WARRANTY, to the extent permitted by law.                           // --version
+
+      \c     suppress trailing newline                                          // --help
+      \f     form feed
+      \n     new line
+      \r     carriage return
+      \t     horizontal tab
+      \v     vertical tab
+
+    NOTE: your shell may have its own version of echo, which usually supersedes
+    the version described here.  Please refer to your shell's documentation
+    for details about the options it supports.
+
+    Report bugs to <bug-coreutils@gnu.org>.
+    Written by FIXME unknown.                                                       // --version
+
+    KLEE: done: total instructions = 64546
+    KLEE: done: completed paths = 25
+    KLEE: done: generated tests = 25
+
+可以看到KLEE探索了25条路径, 所有路径的输出混合到了一起. 除了显示各种字符串外, echo的`--version`和`--help`参数也被探索到了.
+
+我们可以使用klee-stats工具来获得KLEE内部统计的简短摘要: 
+
+    src$ klee-stats klee-last
+    ------------------------------------------------------------------------
+    |  Path   |  Instrs|  Time(s)|  ICov(%)|  BCov(%)|  ICount|  TSolver(%)|
+    ------------------------------------------------------------------------
+    |klee-last|   64546|     0.15|    22.07|    14.14|   19943|       62.97|
+    ------------------------------------------------------------------------
+
+ICov是被覆盖到的LLVM指令的百分比, BCov是被覆盖到的分支的百分比. 百分比如此之低的原因是这些数字是通过统计bitcode文件中所有指令或分支来计算的, 其中包括一堆执行不到的库代码. 可以通过增加`--optimize`选项来解决该问题, 这会导致KLEE在执行bitcode文件之前先对其进行优化(删除死代码等).
+
+    src$ klee --optimize --libc=uclibc --posix-runtime ./echo.bc --sym-arg 3
+    ...
+    KLEE: done: total instructions = 33991
+    KLEE: done: completed paths = 25
+    KLEE: done: generated tests = 25
+    src$ klee-stats klee-last
+    ------------------------------------------------------------------------
+    |  Path   |  Instrs|  Time(s)|  ICov(%)|  BCov(%)|  ICount|  TSolver(%)|
+    ------------------------------------------------------------------------
+    |klee-last|   33991|     0.13|    30.16|    21.91|    8339|       80.66|
+    ------------------------------------------------------------------------
+
+可以看到这次指令覆盖率提高了6%, KLEE执行的更快, 执行的指令也更少. 但是优化并不完美, 剩下未被覆盖的大部分仍然是库函数. 我们可以使用KCachegrind显示KLEE的运行结果(在echo中查找未被覆盖的代码)来验证这一点.  
+
+> 吐槽: 部分情况下使用`--optimize`参数会导致错误, 请去除该参数再试试.  
+
+### Step 6 : Visualizing KLEE’s progress with KCachegrind
+[KCachegrind](http://kcachegrind.sourceforge.net/)是一个出色的可视化工具, 如果没有安装过, 可以通过对应平台的软件安装工具直接安装(apt-get, yum等).
+
+    src$ kcachegrind klee-last/run.istats
+
+{...}省略对KCachegrind的介绍, 可以用该工具看到具体那些行被覆盖, 那些行未被覆盖
+
+> 并没有什么卵用
 
 ### Step 7 : Replaying KLEE generated test cases
-
+KLEE生成的测试用例在`klee-out-n`文件夹中, `n`的值会随运行KLEE的次数而递增, 当然也可以通过`klee-last`目录直接进入到最新一次执行所生成的测试用例中. 
 
 ### Step 8 : Using zcov to analyze coverage
 
