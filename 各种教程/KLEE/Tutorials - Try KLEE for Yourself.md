@@ -398,6 +398,7 @@ wllvm提供了4个python可执行文件:
 
 可以看到KLEE探索了25条路径, 所有路径的输出混合到了一起. 除了显示各种字符串外, echo的`--version`和`--help`参数也被探索到了.
 
+KLEE生成的测试用例在`klee-out-n`文件夹中, `n`的值会随运行KLEE的次数而递增, 当然也可以通过`klee-last`目录直接进入到最新一次执行所生成的测试用例中.
 我们可以使用klee-stats工具来获得KLEE内部统计的简短摘要: 
 
     src$ klee-stats klee-last
@@ -435,11 +436,143 @@ ICov是被覆盖到的LLVM指令的百分比, BCov是被覆盖到的分支的百
 > 并没有什么卵用
 
 ### Step 7 : Replaying KLEE generated test cases
-KLEE生成的测试用例在`klee-out-n`文件夹中, `n`的值会随运行KLEE的次数而递增, 当然也可以通过`klee-last`目录直接进入到最新一次执行所生成的测试用例中. 
+ 让我们看看KLEE生成的测试用例, 如果我们查看`klee-last`目录, 应该可以看到25个`.ktest`文件(之前执行echo.bc所生成的).
+
+    src$ ls klee-last
+    assembly.ll	  test000004.ktest  test000012.ktest  test000020.ktest
+    info		  test000005.ktest  test000013.ktest  test000021.ktest
+    messages.txt	  test000006.ktest  test000014.ktest  test000022.ktest
+    run.istats	  test000007.ktest  test000015.ktest  test000023.ktest
+    run.stats	  test000008.ktest  test000016.ktest  test000024.ktest
+    test000001.ktest  test000009.ktest  test000017.ktest  test000025.ktest
+    test000002.ktest  test000010.ktest  test000018.ktest  warnings.txt
+    test000003.ktest  test000011.ktest  test000019.ktest
+
+这些文件包含了符号数据的实际值, 用来重现KLEE所探索的路径(获取覆盖率或重现错误). 
+他们还包含POSIX运行时生成的附加元数据, 以便在运行时跟踪这些值对应于什么以及当时的版本.
+我们可以使用ktest-tool查看某一个测试用例的内容: 
+
+    $ ktest-tool klee-last/test000001.ktest
+    ktest file : 'klee-last/test000001.ktest'
+    args       : ['./echo.bc', '--sym-arg', '3']
+    num objects: 2
+    object    0: name: 'arg0'
+    object    0: size: 4
+    object    0: data: '\x00\x00\x00\x00'
+    object    1: name: 'model_version'
+    object    1: size: 4
+    object    1: data: '\x01\x00\x00\x00'
+
+该测试用例表明`\x00\x00\x00\x00`作为第一个参数传递给了echo. 但是`.ktest`文件一般来说都不是用来看的.
+对于POSIX runtime, 我们提供了一个工具klee-replay, 它可以用来读取`.ktest`文件并调用应用程序, 自动向程序传递必要的数据以呈现该测试用例中KLEE所探索的路径.
+
+为了查看他的工作原理, 请返回到我们构建的本地可执行文件目录: 
+
+    obj-llvm/src$ cd ../../obj-gcov/src
+    src$ ls -l echo
+    -rwxrwxr-x 1 klee klee 135984 Nov 21 21:58 echo
+
+要使用klee-replay, 我们只需要告诉他要运行的可执行文件和要使用的的`.ktest`文件 . 参数和输入文件等都将从`.ktest`文件中的数据读取.
+
+    src$ klee-replay ./echo ../../obj-llvm/src/klee-last/test000001.ktest
+    klee-replay: TEST CASE: ../../obj-llvm/src/klee-last/test000001.ktest
+    klee-replay: ARGS: "./echo" ""
+
+    klee-replay: EXIT STATUS: NORMAL (0 seconds)
+
+上面例子中第一行显示正在运行的测试用例, 第二行显示执行的可执行文件以及传递的参数(与`.ktest`文件中相匹配). 最后一行是程序的退出状态和运行时间.
+
+我们还可以使用klee-replay工具一个接一个的运行测试用例, 并将从gcov得到的覆盖率与从klee-ststs中得到的覆盖率进行比较.
+
+    src$ rm -f *.gcda # Get rid of any stale gcov files
+    src$ klee-replay ./echo ../../obj-llvm/src/klee-last/*.ktest
+    klee-replay: TEST CASE: ../../obj-llvm/src/klee-last/test000001.ktest
+    klee-replay: ARGS: "./echo" "@@@"
+    @@@
+    klee-replay: EXIT STATUS: NORMAL (0 seconds)
+    ...
+    klee-replay: TEST CASE: ../../obj-llvm/src/klee-last/test000022.ktest
+    klee-replay: ARGS: "./echo" "--v"
+    echo (GNU coreutils) 6.11
+    Copyright (C) 2008 Free Software Foundation, Inc.
+    ...
+
+    src$ gcov echo
+    File '../../src/echo.c'
+    Lines executed:52.43% of 103
+    Creating 'echo.c.gcov'
+
+    File '../../src/system.h'
+    Lines executed:100.00% of 3
+    Creating 'system.h.gcov'
+
+gcov得到的覆盖率明显高于klee-stats得到的覆盖率, 这是因为gcov只考虑单个文件, 而klee-stats考虑整个应用程序.
+和kcachegrind一样, 我们可以检查gcov生成的覆盖率文件, 明确了解哪些行被覆盖到了以及哪些行没被覆盖到. 以下是输出的一个片段: 
+
+        -:  194:
+       23:  195:just_echo:
+        -:  196:
+       23:  197:  if (do_v9)
+        -:  198:    {
+       10:  199:      while (argc > 0)
+        -:  200:	{
+    #####:  201:	  char const *s = argv[0];
+        -:  202:	  unsigned char c;
+        -:  203:
+    #####:  204:	  while ((c = *s++))
+        -:  205:	    {
+    #####:  206:	      if (c == '\\' && *s)
+        -:  207:		{
+    #####:  208:		  switch (c = *s++)
+        -:  209:		    {
+    #####:  210:		    case 'a': c = '\a'; break;
+    #####:  211:		    case 'b': c = '\b'; break;
+    #####:  212:		    case 'c': exit (EXIT_SUCCESS);
+    #####:  213:		    case 'f': c = '\f'; break;
+    #####:  214:		    case 'n': c = '\n'; break;
+
+最左边的列是每行的执行次数, `-`表示改行没有可执行的代码, `####`表示改行从未被覆盖.
+正如你所看到的, 这里未被覆盖的行与kcachegrind中报告的完全一致.
+
+之前的测试因为没有提供足够的参数, 所以覆盖率并不理想. 提供两个参数差不多可以覆盖到整个echo的代码.
+我们可以使用POSIX runtime的`--sym-args`选项来传递多个参数.
+切换回`obj-llvm/src`目录后, 执行以下步骤:
+
+    src$ klee --only-output-states-covering-new --optimize --libc=uclibc --posix-runtime ./echo.bc --sym-args 0 2 4
+    ...
+    KLEE: done: total instructions = 7611521
+    KLEE: done: completed paths = 10179
+    KLEE: done: generated tests = 57
+
+`--sym-args`参数..., Emmmmm懒得解释了直接粘用法吧
+
+    -sym-args <MIN> <MAX> <N>  - Replace by at least MIN arguments and at most MAX arguments, each with maximum length N
+
+我们还在KLEE命令中添加了`--only-output-states-covering-new`参数. 默认情况下, KLEE会为每个探索到的路径生成一个测试用例.
+当程序很庞大时, 很多测试用例最终会执行相同的路径, 计算(或重新执行)这些路径是非常浪费时间的.
+使用该参数告诉KLEE只针对覆盖代码中新指令(或遇到错误)的路径生成测试用例.
+上面例子的最后两行显示, 虽然KLEE探索了10179条路径, 但只需要生成57个测试用例.
+
+我们可以回到`obj-gcov/src`目录运行新得到的测试用例, 并查看覆盖率: 
+
+    src$ rm -f *.gcda # Get rid of any stale gcov files
+    src$ klee-replay ./echo ../../obj-llvm/src/klee-last/*.ktest
+    klee-replay: TEST CASE: ../../obj-llvm/src/klee-last/test000001.ktest
+    klee-replay: ARGS: "./echo"
+    ...
+    ...
+
+    src$ gcov echo
+    File '../../src/echo.c'
+    Lines executed:97.09% of 103
+    Creating 'echo.c.gcov'
+
+    File '../../src/system.h'
+    Lines executed:100.00% of 3
+    Creating 'system.h.gcov'
 
 ### Step 8 : Using zcov to analyze coverage
-
-
+如果想要可视化的覆盖率结果，需要安装zcov工具
 
 ### 杂项:相关问题及参考
 + [OSDI'08 Coreutils Experiments](http://klee.github.io/docs/coreutils-experiments/)
@@ -447,11 +580,25 @@ KLEE生成的测试用例在`klee-out-n`文件夹中, `n`的值会随运行KLEE�
   - 测试时使用的选项 `klee -xxx -xxx ...`, 以及目前推荐的更新后选项
   - 如何生成 `test.env` 和 `/tmp/sandbox`
   - 测试结果不佳的指令及针对性的测试命令
-+ 
+  
+    
+    $ klee --simplify-sym-indices --write-cvcs --write-cov --output-module \  
+    \--max-memory=1000 --disable-inlining --optimize --use-forked-solver \  
+    \--use-cex-cache --with-libc --with-file-model=release \  
+    \--allow-external-sym-calls --only-output-states-covering-new \  
+    \--exclude-libc-cov --exclude-cov-file=./../lib/functions.txt \  
+    \--environ=test.env --run-in=/tmp/sandbox --output-dir=paste-data-1h \  
+    \--max-sym-array-size=4096 --max-instruction-time=10. --max-time=3600. \  
+    \--watchdog --max-memory-inhibit=false --max-static-fork-pct=1 \  
+    \--max-static-solve-pct=1 --max-static-cpfork-pct=1 --switch-type=internal \  
+    \--randomize-fork --use-random-path --use-interleaved-covnew-NURS \  
+    \--use-batching-search --batch-instructions 10000 --init-env \  
+    ./paste.bc --sym-args 0 1 10 --sym-args 0 2 2 --sym-files 1 8 --sym-stdout
 
 
 ## 07. [Using symbolic environment](http://klee.github.io/tutorials/using-symbolic/)
 指导在使用klee进行测试时如何使用 程序的命令行参数 和 符号文件 等符号环境
+
 
 
 ## 附录1: klee常用函数
