@@ -8,6 +8,7 @@
 > 请确保 `clang`, `klee`, `ktest-tools` 等命令都可以使用, 并已链接到系统目录下, 不然敲命令时需要带上命令所在目录  
 > 关于如何构建KLEE请参考 [Building KLEE with LLVM 3.4](https://github.com/Eeylx/MaydayMaydayMayday/blob/master/%E5%90%84%E7%A7%8D%E6%95%99%E7%A8%8B/Building%20KLEE%20with%20LLVM%203.4/Building%20KLEE%20with%20LLVM%203.4.md)  
 
+
 ## 目录:
 [01. First Tutorial](#01-firsttutorial-http-klee-github-io-releases-docs-v1-4-0-tutorials-testing-function-)  
 [02. Second Tutorial]  
@@ -47,6 +48,7 @@ int main() {
   return get_sign(a);
 } 
 ```
+
 
 #### Marking input as symbolic
 为了使用KLEE测试这个函数, 我们需要将变量标记为符号, 使用 `klee_make_symbolic()` 函数, 该函数接收有三个参数: 
@@ -630,14 +632,18 @@ gcov得到的覆盖率明显高于klee-stats得到的覆盖率, 这是因为gcov
 + 使用 klee 对 hello.bc 开始符号执行并生成测试用例
   - `klee hello.bc`
 
+
 + 使用 uClibc c 库和 POSIX
   - `klee --libc=uclibc --posix-runtime ./cat.bc --version`
+
 
 + 用3个字符的符号当做输入参数
   - `klee --libc=uclibc --posix-runtime ./echo.bc --sym-arg 3`
 
+
 + 用 ktest-tool 工具读取 klee 生成的测试用例
   - `ktest-tool --write-ints klee-last/test000001.ktest`
+
 
 + 使用 klee 官方自带的重放工具重放测试用例
   - `export LD_LIBRARY_PATH=/path-to-your-klee-build-dir/lib/:$LD_LIBRARY_PATH` 添加环境变量
@@ -664,6 +670,7 @@ gcov得到的覆盖率明显高于klee-stats得到的覆盖率, 这是因为gcov
     * `-g` : 在目标文件中存储额外的源代码级的调试信息
     * `-emit-llvm` : 获得LLVM IR. 对应的 `-emit-obj` 是获得.o目标文件
   - `llvm-gcc -c -emit-llvm maze.c -o maze.bc`
+
 
 ## NOTE
 
