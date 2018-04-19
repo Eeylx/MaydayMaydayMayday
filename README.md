@@ -12,7 +12,6 @@ I need help! T^T
 
 [编程题](#编程题)
 
-[点我测试](#测试)
 
 
 ## 各种教程
@@ -66,5 +65,3 @@ I need help! T^T
   - [x] 更换make版本
   - [x] markdown教程
   - [x] 更换apt-get源
-  
- <h2 id="测试">测试</h2>
