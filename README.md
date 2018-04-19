@@ -66,3 +66,7 @@ I need help! T^T
   - [x] 更换make版本
   - [x] markdown教程
   - [x] 更换apt-get源
+  
+ ## [test][1]
+ 
+ [1]: www.baidu.com
