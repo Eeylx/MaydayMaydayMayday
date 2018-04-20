@@ -38,26 +38,26 @@ int doClimb(int** arr, int n, int m, int i, int j, int lastAction) {
 	int upResult = 0, downResult = 0, leftResult = 0, rightResult = 0;
 
 	if (!(i == 0 || arr[i - 1][j] < arr[i][j])) {				    // 能往上走
-		if (lastAction != goDown) {									// 上一步不是往下走(防止循环)
-			upResult = doClimb(arr, n, m, i - 1, j, goUp);			// 往上走
-		}														    // 下同
+		if (lastAction != goDown) {                                 // 上一步不是往下走(防止循环)
+			upResult = doClimb(arr, n, m, i - 1, j, goUp);          // 往上走
+		}                                                           // 下同
 	}
 
 	if (!(i == n - 1 || arr[i + 1][j] < arr[i][j])) {
 		if (lastAction != goUp) {
-			downResult = doClimb(arr, n, m, i + 1, j, goDown);		// 往下走
+			downResult = doClimb(arr, n, m, i + 1, j, goDown);      // 往下走
 		}
 	}
 
 	if (!(j == 0 || arr[i][j - 1] < arr[i][j])) {
 		if (lastAction != goRight) {
-			leftResult = doClimb(arr, n, m, i, j - 1, goLeft);		// 往左走
+			leftResult = doClimb(arr, n, m, i, j - 1, goLeft);      // 往左走
 		}
 	}
 
 	if (!(j == m - 1 || arr[i][j + 1] < arr[i][j])) {
 		if (lastAction != goLeft) {
-			rightResult = doClimb(arr, n, m, i, j + 1, goRight);	// 往右走
+			rightResult = doClimb(arr, n, m, i, j + 1, goRight);    // 往右走
 		}
 	}
 
@@ -69,18 +69,18 @@ int main() {
 	int posi = 0, posj = 0;
 	int i = 0, j = 0;
 
-	cin >> n >> m;					// n行m列
-	cin >> posi >> posj;			// 初始位置
+	cin >> n >> m;                  // n行m列
+	cin >> posi >> posj;            // 初始位置
 
-	int** arr = new int*[n];	    // 申请n行m列的二维数组
+	int** arr = new int*[n];        // 申请n行m列的二维数组
 	for (i = 0; i<n; i++) {
 		arr[i] = new int[m];
 
-		for (j = 0; j<m; j++)		// 输入对应的高度
+		for (j = 0; j<m; j++)       // 输入对应的高度
 			cin >> arr[i][j];
 	}
 
-	cout << doClimb(arr, n, m, posi-1, posj-1, init);	// 题目中第一行列是1, 但数组下标是0
+	cout << doClimb(arr, n, m, posi-1, posj-1, init);   // 题目中第一行列是1, 但数组下标是0
 
 	for (i = 0; i<n; i++)
 		delete[] arr[i];
