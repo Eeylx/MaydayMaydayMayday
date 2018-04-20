@@ -27,8 +27,7 @@ int maxResult(int upResult, int downResult, int leftResult, int rightResult) {
 // 如果有更高的位置就往过走, 无处可去则返回自身所在位置的高度
 //  arr: 二维数组; n, m: 二维数组行列; i, j: 当前位置; lastAction: 上一步的行动
 int doClimb(int** arr, int n, int m, int i, int j, int lastAction) {
-                                                                    // 如果
-	if ((i == 0 || arr[i - 1][j] < arr[i][j]) &&                    // 不能往上走
+	if ((i == 0 || arr[i - 1][j] < arr[i][j]) &&                    // 如果 不能往上走
 		(i == n - 1 || arr[i + 1][j] < arr[i][j]) &&                // 不能往下走
 		(j == 0 || arr[i][j - 1] < arr[i][j]) &&                    // 不能往左走
 		(j == m - 1 || arr[i][j + 1] < arr[i][j])) {                // 不能往右走
@@ -37,7 +36,7 @@ int doClimb(int** arr, int n, int m, int i, int j, int lastAction) {
 
 	int upResult = 0, downResult = 0, leftResult = 0, rightResult = 0;
 
-	if (!(i == 0 || arr[i - 1][j] < arr[i][j])) {				    // 能往上走
+	if (!(i == 0 || arr[i - 1][j] < arr[i][j])) {                   // 能往上走
 		if (lastAction != goDown) {                                 // 上一步不是往下走(防止循环)
 			upResult = doClimb(arr, n, m, i - 1, j, goUp);          // 往上走
 		}                                                           // 下同
