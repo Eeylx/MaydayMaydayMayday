@@ -27,7 +27,7 @@ int maxResult(int upResult, int downResult, int leftResult, int rightResult) {
 // 如果有更高的位置就往过走, 无处可去则返回自身所在位置的高度
 //  arr: 二维数组; n, m: 二维数组行列; i, j: 当前位置; lastAction: 上一步的行动
 int doClimb(int** arr, int n, int m, int i, int j, int lastAction) {
-	if ((i == 0 || arr[i - 1][j] < arr[i][j]) &&                    // 如果 不能往上走
+	if ((i == 0 || arr[i - 1][j] < arr[i][j]) &&               // 如果 不能往上走
 		(i == n - 1 || arr[i + 1][j] < arr[i][j]) &&                // 不能往下走
 		(j == 0 || arr[i][j - 1] < arr[i][j]) &&                    // 不能往左走
 		(j == m - 1 || arr[i][j + 1] < arr[i][j])) {                // 不能往右走
@@ -68,14 +68,14 @@ int main() {
 	int posi = 0, posj = 0;
 	int i = 0, j = 0;
 
-	cin >> n >> m;                  // n行m列
-	cin >> posi >> posj;            // 初始位置
+	cin >> n >> m;                      // n行m列
+	cin >> posi >> posj;                // 初始位置
 
-	int** arr = new int*[n];        // 申请n行m列的二维数组
+	int** arr = new int*[n];            // 申请n行m列的二维数组
 	for (i = 0; i<n; i++) {
 		arr[i] = new int[m];
 
-		for (j = 0; j<m; j++)       // 输入对应的高度
+		for (j = 0; j<m; j++)           // 输入对应的高度
 			cin >> arr[i][j];
 	}
 
