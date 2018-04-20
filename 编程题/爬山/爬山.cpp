@@ -27,7 +27,7 @@ int maxResult(int upResult, int downResult, int leftResult, int rightResult) {
 // 如果有更高的位置就往过走, 无处可去则返回自身所在位置的高度
 //  arr: 二维数组; n, m: 二维数组行列; i, j: 当前位置; lastAction: 上一步的行动
 int doClimb(int** arr, int n, int m, int i, int j, int lastAction) {
-	if ((i == 0 || arr[i - 1][j] < arr[i][j]) &&               // 如果 不能往上走
+	if ((i == 0 || arr[i - 1][j] < arr[i][j]) &&                   // 如果 不能往上走
 		(i == n - 1 || arr[i + 1][j] < arr[i][j]) &&                // 不能往下走
 		(j == 0 || arr[i][j - 1] < arr[i][j]) &&                    // 不能往左走
 		(j == m - 1 || arr[i][j + 1] < arr[i][j])) {                // 不能往右走
@@ -36,27 +36,27 @@ int doClimb(int** arr, int n, int m, int i, int j, int lastAction) {
 
 	int upResult = 0, downResult = 0, leftResult = 0, rightResult = 0;
 
-	if (!(i == 0 || arr[i - 1][j] < arr[i][j])) {                   // 能往上走
+	if (!(i == 0 || arr[i - 1][j] < arr[i][j])) {                       // 能往上走
 		if (lastAction != goDown) {                                 // 上一步不是往下走(防止循环)
-			upResult = doClimb(arr, n, m, i - 1, j, goUp);          // 往上走
+			upResult = doClimb(arr, n, m, i - 1, j, goUp);      // 往上走
 		}                                                           // 下同
 	}
 
 	if (!(i == n - 1 || arr[i + 1][j] < arr[i][j])) {
 		if (lastAction != goUp) {
-			downResult = doClimb(arr, n, m, i + 1, j, goDown);      // 往下走
+			downResult = doClimb(arr, n, m, i + 1, j, goDown);  // 往下走
 		}
 	}
 
 	if (!(j == 0 || arr[i][j - 1] < arr[i][j])) {
 		if (lastAction != goRight) {
-			leftResult = doClimb(arr, n, m, i, j - 1, goLeft);      // 往左走
+			leftResult = doClimb(arr, n, m, i, j - 1, goLeft);  // 往左走
 		}
 	}
 
 	if (!(j == m - 1 || arr[i][j + 1] < arr[i][j])) {
 		if (lastAction != goLeft) {
-			rightResult = doClimb(arr, n, m, i, j + 1, goRight);    // 往右走
+			rightResult = doClimb(arr, n, m, i, j + 1, goRight);// 往右走
 		}
 	}
 
@@ -75,7 +75,7 @@ int main() {
 	for (i = 0; i<n; i++) {
 		arr[i] = new int[m];
 
-		for (j = 0; j<m; j++)           // 输入对应的高度
+		for (j = 0; j<m; j++)       // 输入对应的高度
 			cin >> arr[i][j];
 	}
 
