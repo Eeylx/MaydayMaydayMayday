@@ -25,7 +25,7 @@
 测试一个简单的程序.(使用klee的简单的整个流程)
 
 示例在 `klee/examples` 目录下, 本例子使用 `klee/examples/get_sign`目录下的 `get_sign.c`
-```c++
+```cpp
 /*
  * First KLEE tutorial: testing a small function
  */
@@ -511,6 +511,7 @@ ICov是被覆盖到的LLVM指令的百分比, BCov是被覆盖到的分支的百
 gcov得到的覆盖率明显高于klee-stats得到的覆盖率, 这是因为gcov只考虑单个文件, 而klee-stats考虑整个应用程序.
 和kcachegrind一样, 我们可以检查gcov生成的覆盖率文件, 明确了解哪些行被覆盖到了以及哪些行没被覆盖到. 以下是输出的一个片段: 
 
+```cpp
         -:  194:
        23:  195:just_echo:
         -:  196:
@@ -532,6 +533,7 @@ gcov得到的覆盖率明显高于klee-stats得到的覆盖率, 这是因为gcov
     #####:  212:		    case 'c': exit (EXIT_SUCCESS);
     #####:  213:		    case 'f': c = '\f'; break;
     #####:  214:		    case 'n': c = '\n'; break;
+```
 
 最左边的列是每行的执行次数, `-`表示改行没有可执行的代码, `####`表示改行从未被覆盖.
 正如你所看到的, 这里未被覆盖的行与kcachegrind中报告的完全一致.
@@ -582,20 +584,19 @@ gcov得到的覆盖率明显高于klee-stats得到的覆盖率, 这是因为gcov
   - 测试时使用的选项 `klee -xxx -xxx ...`, 以及目前推荐的更新后选项
   - 如何生成 `test.env` 和 `/tmp/sandbox`
   - 测试结果不佳的指令及针对性的测试命令
-  
-    
-    $ klee --simplify-sym-indices --write-cvcs --write-cov --output-module \  
-    \--max-memory=1000 --disable-inlining --optimize --use-forked-solver \  
-    \--use-cex-cache --with-libc --with-file-model=release \  
-    \--allow-external-sym-calls --only-output-states-covering-new \  
-    \--exclude-libc-cov --exclude-cov-file=./../lib/functions.txt \  
-    \--environ=test.env --run-in=/tmp/sandbox --output-dir=paste-data-1h \  
-    \--max-sym-array-size=4096 --max-instruction-time=10. --max-time=3600. \  
-    \--watchdog --max-memory-inhibit=false --max-static-fork-pct=1 \  
-    \--max-static-solve-pct=1 --max-static-cpfork-pct=1 --switch-type=internal \  
-    \--randomize-fork --use-random-path --use-interleaved-covnew-NURS \  
-    \--use-batching-search --batch-instructions 10000 --init-env \  
-    ./paste.bc --sym-args 0 1 10 --sym-args 0 2 2 --sym-files 1 8 --sym-stdout
+
+        $ klee --simplify-sym-indices --write-cvcs --write-cov --output-module \  
+        \--max-memory=1000 --disable-inlining --optimize --use-forked-solver \  
+        \--use-cex-cache --with-libc --with-file-model=release \  
+        \--allow-external-sym-calls --only-output-states-covering-new \  
+        \--exclude-libc-cov --exclude-cov-file=./../lib/functions.txt \  
+        \--environ=test.env --run-in=/tmp/sandbox --output-dir=paste-data-1h \  
+        \--max-sym-array-size=4096 --max-instruction-time=10. --max-time=3600. \  
+        \--watchdog --max-memory-inhibit=false --max-static-fork-pct=1 \  
+        \--max-static-solve-pct=1 --max-static-cpfork-pct=1 --switch-type=internal \  
+        \--randomize-fork --use-random-path --use-interleaved-covnew-NURS \  
+        \--use-batching-search --batch-instructions 10000 --init-env \  
+        ./paste.bc --sym-args 0 1 10 --sym-args 0 2 2 --sym-files 1 8 --sym-stdout
 
 
 ## 07. [Using symbolic environment](http://klee.github.io/tutorials/using-symbolic/)
