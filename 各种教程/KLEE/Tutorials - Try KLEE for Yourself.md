@@ -248,13 +248,13 @@ Creating 'system.h.gcov'
 
 wllvm提供了4个python可执行文件:
 + wllvm
-  - c编译器
+    - c编译器
 + wllvm++
-  - c++编译器
+    - c++编译器
 + extract-bc
-  - 用于从构建好的程序(目标文件, 可执行文件, 库或归档文件)中提取bitcode
+    - 用于从构建好的程序(目标文件, 可执行文件, 库或归档文件)中提取bitcode
 + wllvm-sanity-checker
-  - 用于检测配置的疏漏
+    - 用于检测配置的疏漏
   
 本教程中使用的wllvm版本是`1.0.17`, 安装wllvm : 
 
@@ -632,10 +632,10 @@ Creating 'system.h.gcov'
 
 ### Extra : 相关问题及参考
 + [OSDI'08 Coreutils Experiments](http://klee.github.io/docs/coreutils-experiments/)
-  - 使用KLEE测试CoreUtils的版本, 环境, 测试的CoreUtils指令, 测试时执行的命令等
-  - 测试时使用的选项 `klee -xxx -xxx ...`, 以及目前推荐的更新后选项
-  - 如何生成 `test.env` 和 `/tmp/sandbox`
-  - 测试结果不佳的指令及针对性的测试命令
+    - 使用KLEE测试CoreUtils的版本, 环境, 测试的CoreUtils指令, 测试时执行的命令等
+    - 测试时使用的选项 `klee -xxx -xxx ...`, 以及目前推荐的更新后选项
+    - 如何生成 `test.env` 和 `/tmp/sandbox`
+    - 测试结果不佳的指令及针对性的测试命令
 
         $ klee --simplify-sym-indices --write-cvcs --write-cov --output-module \  
         \--max-memory=1000 --disable-inlining --optimize --use-forked-solver \  
@@ -659,19 +659,19 @@ Creating 'system.h.gcov'
 ## 附录1: klee常用函数
 
 + 将变量标记为符号
-  - `klee_make_symbolic( var, sizeof(var), "var" )`
-  - 该函数接收三个参数
-    * 看作符号的变量地址
-    * 变量大小
-    * 变量名称(任意)
+    - `klee_make_symbolic( var, sizeof(var), "var" )`
+    - 该函数接收三个参数
+        * 看作符号的变量地址
+        * 变量大小
+        * 变量名称(任意)
 + 只在该表达式为真的路径上探索
-  - `klee_assume( arr[size - 1] == '\0' )`
-  - 相当于把整个程序包在 if( arr[size - 1] == '\0' ) 的条件判断中
-  - 如果该表达式永远不可能为真(即表达式可能是错的), 则klee报告一个错误
-  - 尽可能使用简单的表达式, 并使用 `&` 和 `|` ,而不是 `&&` 和 `||`
+    - `klee_assume( arr[size - 1] == '\0' )`
+    - 相当于把整个程序包在 if( arr[size - 1] == '\0' ) 的条件判断中
+    - 如果该表达式永远不可能为真(即表达式可能是错的), 则klee报告一个错误
+    - 尽可能使用简单的表达式, 并使用 `&` 和 `|` ,而不是 `&&` 和 `||`
 + 强制一个条件成立(断言)
-  - `klee_assert()`
-  - 可以用该命令标记想要的结果, 例如在成功时的代码后添加`klee_assert(0)` (klee会将其标记为一个错误)
+    - `klee_assert()`
+    - 可以用该命令标记想要的结果, 例如在成功时的代码后添加`klee_assert(0)` (klee会将其标记为一个错误)
 
 
 
@@ -679,28 +679,28 @@ Creating 'system.h.gcov'
 [klee --help全部内容](https://pastebin.com/tDPGNn9D)
 
 + 使用 klee 对 hello.bc 开始符号执行并生成测试用例
-  - `klee hello.bc`
+    - `klee hello.bc`
 + 使用 uClibc c 库和 POSIX
-  - `klee --libc=uclibc --posix-runtime ./cat.bc --version`
+    - `klee --libc=uclibc --posix-runtime ./cat.bc --version`
 + 用klee自己生成输入参数
-  - 查看用法说明
-    *  `klee --libc=uclibc --posix-runtime ./echo.bc --help`
-  - 例子
-    * `klee --libc=uclibc --posix-runtime ./echo.bc --sym-arg 3`
-    * `klee --only-output-states-covering-new --optimize --libc=uclibc --posix-runtime ./echo.bc --sym-args 0 2 4`
+    - 查看用法说明
+        *  `klee --libc=uclibc --posix-runtime ./echo.bc --help`
+    - 例子
+        * `klee --libc=uclibc --posix-runtime ./echo.bc --sym-arg 3`
+        * `klee --only-output-states-covering-new --optimize --libc=uclibc --posix-runtime ./echo.bc --sym-args 0 2 4`
 + 用 ktest-tool 工具读取 klee 生成的测试用例
-  - `ktest-tool --write-ints klee-last/test000001.ktest`
+    - `ktest-tool --write-ints klee-last/test000001.ktest`
 + 查看klee生成的统计信息
-  - `klee-stats --print-all klee-last`
+    - `klee-stats --print-all klee-last`
 + 使用可视化工具`kcachegrind`查看klee生成的统计信息
-  - `kcachegrind klee-last/run.istats`
+    - `kcachegrind klee-last/run.istats`
 + 使用 klee 官方自带的重放工具重放测试用例
-  - `export LD_LIBRARY_PATH=/path-to-your-klee-build-dir/lib/:$LD_LIBRARY_PATH` 添加环境变量
-  - `gcc -L /home/eeyore/work/klee-build/lib/ get_sign.c -lkleeRuntest` 选择要重放的程序
-  - `KTEST_FILE=klee-last/test000001.ktest ./a.out` 选择要重放的测试用例 
-  - `echo $?` 查看运行结果
+    - `export LD_LIBRARY_PATH=/path-to-your-klee-build-dir/lib/:$LD_LIBRARY_PATH` 添加环境变量
+    - `gcc -L /home/eeyore/work/klee-build/lib/ get_sign.c -lkleeRuntest` 选择要重放的程序
+    - `KTEST_FILE=klee-last/test000001.ktest ./a.out` 选择要重放的测试用例 
+    - `echo $?` 查看运行结果
 + 使用`klee-replay`工具重放测试用例
-  - `klee-replay ./echo ../../obj-llvm/src/klee-last/test000001.ktest`
+    - `klee-replay ./echo ../../obj-llvm/src/klee-last/test000001.ktest`
 
 
 ## 附录3: linux编译器相关常用命令
@@ -709,13 +709,13 @@ Creating 'system.h.gcov'
   - `gcc hello.c -o hello.exe`
     * `-o` : 指定生成的输出文件
 + 将源代码编译为 LLVM IR 字节码
-  - `clang -emit-llvm -c -g get_sign.c`
-  - `clang -I ../../include -emit-llvm -c -g get_sign.c`
-    * `-I` : 使编译器可以找到klee/klee.h  
-    * `-c` : 只将代码编译到目标文件, 而不是可执行文件
-    * `-g` : 在目标文件中存储额外的源代码级的调试信息
-    * `-emit-llvm` : 获得LLVM IR. 对应的 `-emit-obj` 是获得.o目标文件
-  - `llvm-gcc -c -emit-llvm maze.c -o maze.bc`
+    - `clang -emit-llvm -c -g get_sign.c`
+    - `clang -I ../../include -emit-llvm -c -g get_sign.c`
+        * `-I` : 使编译器可以找到klee/klee.h  
+        * `-c` : 只将代码编译到目标文件, 而不是可执行文件
+        * `-g` : 在目标文件中存储额外的源代码级的调试信息
+        * `-emit-llvm` : 获得LLVM IR. 对应的 `-emit-obj` 是获得.o目标文件
+    - `llvm-gcc -c -emit-llvm maze.c -o maze.bc`
 
 ## 附录4: 使用KLEE极简流程
 > 对应命令请酌情修改, 以下只给出参数使用较多的例子
