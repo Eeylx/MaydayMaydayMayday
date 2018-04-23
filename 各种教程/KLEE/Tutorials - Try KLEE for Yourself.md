@@ -486,7 +486,6 @@ ICov是被覆盖到的LLVM指令的百分比, BCov是被覆盖到的分支的百
 
 我们还可以使用klee-replay工具一个接一个的运行测试用例, 并将从gcov得到的覆盖率与从klee-ststs中得到的覆盖率进行比较.
 
-```cpp
     src$ rm -f *.gcda # Get rid of any stale gcov files
     src$ klee-replay ./echo ../../obj-llvm/src/klee-last/*.ktest
     klee-replay: TEST CASE: ../../obj-llvm/src/klee-last/test000001.ktest
@@ -508,7 +507,6 @@ ICov是被覆盖到的LLVM指令的百分比, BCov是被覆盖到的分支的百
     File '../../src/system.h'
     Lines executed:100.00% of 3
     Creating 'system.h.gcov'
-```
 
 gcov得到的覆盖率明显高于klee-stats得到的覆盖率, 这是因为gcov只考虑单个文件, 而klee-stats考虑整个应用程序.
 和kcachegrind一样, 我们可以检查gcov生成的覆盖率文件, 明确了解哪些行被覆盖到了以及哪些行没被覆盖到. 以下是输出的一个片段: 
