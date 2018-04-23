@@ -576,7 +576,7 @@ gcov得到的覆盖率明显高于klee-stats得到的覆盖率, 这是因为gcov
 ### Step 8 : Using zcov to analyze coverage
 如果想要可视化的覆盖率结果，需要安装zcov工具
 
-### 杂项:相关问题及参考
+### Extra : 相关问题及参考
 + [OSDI'08 Coreutils Experiments](http://klee.github.io/docs/coreutils-experiments/)
   - 使用KLEE测试CoreUtils的版本, 环境, 测试的CoreUtils指令, 测试时执行的命令等
   - 测试时使用的选项 `klee -xxx -xxx ...`, 以及目前推荐的更新后选项
