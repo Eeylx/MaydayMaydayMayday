@@ -80,12 +80,14 @@ int main() {
 
 可以看到以下输出: 
 
+```bash
 	KLEE: output directory is "/home/eeyore/work/klee/examples/get_sign/klee-out-0"
 	KLEE: Using STP solver backend
 		
 	KLEE: done: total instructions = 31
 	KLEE: done: completed paths = 3
 	KLEE: done: generated tests = 3
+```
 
 + KLEE在程序中探索了三条路径(=0, <0, >0), 并为每条探索路径生成了一个测试用例  
 + KLEE执行后的输出是一个包含KLEE生成的测试用例的目录(klee-out-0)
@@ -101,12 +103,14 @@ KLEE生成的测试用例被写入扩展名为 `.ktest` 的文件中, 这些是�
 
 可以看到以下输出: 
 
+```bash
     ktest file : 'klee-last/test000001.ktest'
     args       : ['get_sign.bc']
     num objects: 1
     object    0: name: 'a'
     object    0: size: 4
     object    0: data: 0
+```
 
 每个测试文件中, KLEE都会记录以下参数
 + 被调用的程序 (get_sign.bc)
@@ -125,6 +129,7 @@ KLEE生成的测试用例被写入扩展名为 `.ktest` 的文件中, 这些是�
 
 要使用它, 只需将程序与libkleeRuntest库连接起来, 并将环境变量 `KTEST_FILE` 设置为要使用的测试用例的名称
 
+```bash
     // 该版本为 KLEE v1.4.0 官方版本, 但不能正常使用
     export LD_LIBRARY_PATH=/path-to-your-klee-build-dir/Release+Debug+Asserts/lib/:$LD_LIBRARY_PATH
     gcc -L /home/eeyore/work/klee-build/Release+Debug+Asserts/lib/ get_sign.c -lkleeRuntest
@@ -134,9 +139,11 @@ KLEE生成的测试用例被写入扩展名为 `.ktest` 的文件中, 这些是�
     // klee.h 文件在 your-path-to-klee-dir/include/klee目录下
     export LD_LIBRARY_PATH=/path-to-your-klee-build-dir/lib/:$LD_LIBRARY_PATH
     gcc -L /home/eeyore/work/klee-build/lib/ get_sign.c -lkleeRuntest
+```
 
 执行完善上述命令后, 即可选择测试用例: 
 
+```bash
     KTEST_FILE=klee-last/test000001.ktest ./a.out 
     echo $?
     0                                               // 输出结果
@@ -146,6 +153,7 @@ KLEE生成的测试用例被写入扩展名为 `.ktest` 的文件中, 这些是�
     KTEST_FILE=klee-last/test000003.ktest ./a.out 
     echo $?
     255                                             // 输出结果
+ ```
  
 就像预期的那样, 程序在运行三个测试用例的时候分别返回了0, 1 和 -1(255)
 
@@ -174,6 +182,7 @@ KLEE生成的测试用例被写入扩展名为 `.ktest` 的文件中, 这些是�
 
 在使用 LLVM 构建之前, 先构建一个带有 gcov 支持的 coreutils, 稍后将用它来获取 KLEE 生成的测试用例的覆盖信息. 解压并进入刚才下载的 coreutils 目录(coreutils-6.11), 然后执行以下命令 :
 
+```bash
     coreutils-6.11$ mkdir obj-gcov
     coreutils-6.11$ cd obj-gcov
     obj-gcov$ ../configure --disable-nls CFLAGS="-g -fprofile-arcs -ftest-coverage"
@@ -181,11 +190,13 @@ KLEE生成的测试用例被写入扩展名为 `.ktest` 的文件中, 这些是�
     obj-gcov$ make
     obj-gcov$ make -C src arch hostname
     ... verify that make worked ...
+```
 
 使用 `--disable-nls` 参数是因为在C代码库中有许多额外的初始化但是我们并不想测试它们. 即使这些不是 KLEE 将要运行的可执行文件, 但我们希望使用相同的编译器标志, 以便在未安装的二进制文件上运行时, KLEE 生成的测试用例最有可能正常工作
 
 你现在应该在 `objc-gcov/src` 目录下有一组 coreutils. 例如 : 
 
+```bash
     obj-gcov$ cd src
     src$ ls -l ls echo cat
     -rwxrwxr-x 1 klee klee 150632 Nov 21 21:58 cat
@@ -200,9 +211,11 @@ KLEE生成的测试用例被写入扩展名为 `.ktest` 的文件中, 这些是�
     There is NO WARRANTY, to the extent permitted by law.
 
     Written by Torbjorn Granlund and Richard M. Stallman.
+```
 
 另外, 这些可执行文件应该用 gcov 支持来构建, 所以在运行时会把 `.gcda` 写入当前目录. 该文件包含有关在程序运行时确切执行哪些代码的信息. 有关更多信息请参阅[Gcov文档](http://gcc.gnu.org/onlinedocs/gcc/Gcov.html). 我们可以使用 gcov 工具本身来生成覆盖率信息的可读形式. 例如 : 
 
+```bash
     src$ rm -f *.gcda # Get rid of any stale gcov files
     src$ ./echo**
     
@@ -217,6 +230,7 @@ KLEE生成的测试用例被写入扩展名为 `.ktest` 的文件中, 这些是�
     File '../../src/system.h'
     Lines executed:0.00% of 3
     Creating 'system.h.gcov'
+```
 
 默认情况下, gcov将显示程序中执行的行数(.h文件中的代码会被编辑到echo.c中)
 
@@ -246,6 +260,7 @@ wllvm提供了4个python可执行文件:
 ### Step 3 : Build Coreutils with LLVM
 我们将在一个单独的目录中构建Coreutils, 以便我们可以轻松访问可执行版本和llvm版本 : 
 
+```bash
     coreutils-6.11$ mkdir obj-llvm
     coreutils-6.11$ cd obj-llvm
     obj-llvm$ CC=wllvm ../configure --disable-nls CFLAGS="-g"
@@ -253,11 +268,13 @@ wllvm提供了4个python可执行文件:
     obj-llvm$ CC=wllvm make
     obj-llvm$ CC=wllvm make -C src arch hostname
     ... verify that make worked ...
+```
 
 这里我们做了两个更改, 首先我们不想在要用klee测试的二进制文件中添加gcov工具, 所以我们没有使用`-fprofile-arcs -ftest-coverage`参数, 其次在运行make时, 我们设置CC变量指向wllvm
 
 如果一切顺利, 你现在应该已经有了Coreutils的可执行文件, 例如 : 
 
+```bash
     obj-llvm$ cd src
     src$ ls -l ls echo cat
     -rwxrwxr-x 1 klee klee 105448 Nov 21 12:03 cat
@@ -271,21 +288,25 @@ wllvm提供了4个python可执行文件:
     There is NO WARRANTY, to the extent permitted by law.
 
     Written by Torbjorn Granlund and Richard M. Stallman.
+```
 
 你可能会注意到我们获得的是可执行文件而不是LLVM的bitcode文件, 这是因为WLLVM分两步工作. WLLVM首先调用标准编译器, 然后对每个obj文件调用bitcode编译器生成LLVM的bitcode文件. WLLVM stores the location of the generated bitcode files in a dedicated section of the object file. When object files are linked together, the locations are concatenated to save the locations of all constituent files. 当构建完成后, 可以使用WLLVM的实用工具extract-bc读取专用部分的内容, 并将所有bitcode链接到单个的完整bitcode文件中. 
 
 要获得所有Coreutils的LLVM bitcode版本，我们可以在所有可执行文件上调用extract-bc : 
 
+```bash
     // ln -s /usr/bin/llvm-link-3.4 /usr/bin/llvm-link
     src$ find . -executable -type f | xargs -I '{}' extract-bc '{}'
     src$ ls -l ls.bc
     -rw-rw-r-- 1 klee klee 543052 Nov 21 12:03 ls.bc
+```
 
 ### Step 4 : Using KLEE as an interpreter
 下面的例子是如何使用KLEE运行与之前相同的cat命令. 
 > 这一步你需要使用uclibc和POSIX参数, 如果之前跳过了相关步骤, 现在需要补上T^T.  
 > 链接: [(Optional) Build uclibc and the POSIX environment model](https://github.com/Eeylx/MaydayMaydayMayday/blob/master/%E5%90%84%E7%A7%8D%E6%95%99%E7%A8%8B/KLEE/Building%20KLEE%20with%20LLVM%203.4.md#4-optional-build-uclibc-and-the-posix-environment-model)
 
+```bash
     src$ klee --libc=uclibc --posix-runtime ./cat.bc --version
     KLEE: NOTE: Using klee-uclibc : /usr/local/lib/klee/runtime/klee-uclibc.bca
     KLEE: NOTE: Using model: /usr/local/lib/klee/runtime/libkleeRuntimePOSIX.bca
@@ -312,6 +333,7 @@ wllvm提供了4个python可执行文件:
     KLEE: done: total instructions = 28988
     KLEE: done: completed paths = 1
     KLEE: done: generated tests = 1
+```
 
 {...} 省略了对上面例子的解释, 大致意思是:   
 命令的格式是 klee命令 + klee的参数 + 要执行的命令的.bc文件 + 命令的参数  
@@ -325,6 +347,7 @@ wllvm提供了4个python可执行文件:
 
 以echo命令为例, 当使用uclibc和POSIX运行时, KLEE会将程序的`main()`函数替换成`klee_init_env()`函数. 这个函数改变了应用程序的命令处理行为, 特别是支持符号参数的构造. 例如, 传递`--help`参数时会产生如下输出: 
 
+```bash
     src$ klee --libc=uclibc --posix-runtime ./echo.bc --help
     ...
     usage: (klee_init_env) [options] [program arguments]
@@ -338,9 +361,11 @@ wllvm提供了4个python可执行文件:
       -max-fail <N>             - Allow up to N injected failures
       -fd-fail                  - Shortcut for '-max-fail 1'
     ...
+```
 
 下面的例子使用长度为3个字符的符号参数运行echo: 
  
+ ```bash
     src$ klee --libc=uclibc --posix-runtime ./echo.bc --sym-arg 3
     KLEE: NOTE: Using klee-uclibc : /usr/local/lib/klee/runtime/klee-uclibc.bca
     KLEE: NOTE: Using model: /usr/local/lib/klee/runtime/libkleeRuntimePOSIX.bca
@@ -397,21 +422,25 @@ wllvm提供了4个python可执行文件:
     KLEE: done: total instructions = 64546
     KLEE: done: completed paths = 25
     KLEE: done: generated tests = 25
+```
 
 可以看到KLEE探索了25条路径, 所有路径的输出混合到了一起. 除了显示各种字符串外, echo的`--version`和`--help`参数也被探索到了.
 
 KLEE生成的测试用例在`klee-out-n`文件夹中, `n`的值会随运行KLEE的次数而递增, 当然也可以通过`klee-last`目录直接进入到最新一次执行所生成的测试用例中.
 我们可以使用klee-stats工具来获得KLEE内部统计的简短摘要: 
 
+```bash
     src$ klee-stats klee-last
     ------------------------------------------------------------------------
     |  Path   |  Instrs|  Time(s)|  ICov(%)|  BCov(%)|  ICount|  TSolver(%)|
     ------------------------------------------------------------------------
     |klee-last|   64546|     0.15|    22.07|    14.14|   19943|       62.97|
     ------------------------------------------------------------------------
+```
 
 ICov是被覆盖到的LLVM指令的百分比, BCov是被覆盖到的分支的百分比. 百分比如此之低的原因是这些数字是通过统计bitcode文件中所有指令或分支来计算的, 其中包括一堆执行不到的库代码. 可以通过增加`--optimize`选项来解决该问题, 这会导致KLEE在执行bitcode文件之前先对其进行优化(删除死代码等).
 
+```bash
     src$ klee --optimize --libc=uclibc --posix-runtime ./echo.bc --sym-arg 3
     ...
     KLEE: done: total instructions = 33991
@@ -423,6 +452,7 @@ ICov是被覆盖到的LLVM指令的百分比, BCov是被覆盖到的分支的百
     ------------------------------------------------------------------------
     |klee-last|   33991|     0.13|    30.16|    21.91|    8339|       80.66|
     ------------------------------------------------------------------------
+```
 
 可以看到这次指令覆盖率提高了6%, KLEE执行的更快, 执行的指令也更少. 但是优化并不完美, 剩下未被覆盖的大部分仍然是库函数. 我们可以使用KCachegrind显示KLEE的运行结果(在echo中查找未被覆盖的代码)来验证这一点.  
 
@@ -440,6 +470,7 @@ ICov是被覆盖到的LLVM指令的百分比, BCov是被覆盖到的分支的百
 ### Step 7 : Replaying KLEE generated test cases
  让我们看看KLEE生成的测试用例, 如果我们查看`klee-last`目录, 应该可以看到25个`.ktest`文件(之前执行echo.bc所生成的).
 
+```bash
     src$ ls klee-last
     assembly.ll	  test000004.ktest  test000012.ktest  test000020.ktest
     info		  test000005.ktest  test000013.ktest  test000021.ktest
@@ -449,11 +480,13 @@ ICov是被覆盖到的LLVM指令的百分比, BCov是被覆盖到的分支的百
     test000001.ktest  test000009.ktest  test000017.ktest  test000025.ktest
     test000002.ktest  test000010.ktest  test000018.ktest  warnings.txt
     test000003.ktest  test000011.ktest  test000019.ktest
+```
 
 这些文件包含了符号数据的实际值, 用来重现KLEE所探索的路径(获取覆盖率或重现错误). 
 他们还包含POSIX运行时生成的附加元数据, 以便在运行时跟踪这些值对应于什么以及当时的版本.
 我们可以使用ktest-tool查看某一个测试用例的内容: 
 
+```bash
     $ ktest-tool klee-last/test000001.ktest
     ktest file : 'klee-last/test000001.ktest'
     args       : ['./echo.bc', '--sym-arg', '3']
@@ -464,23 +497,28 @@ ICov是被覆盖到的LLVM指令的百分比, BCov是被覆盖到的分支的百
     object    1: name: 'model_version'
     object    1: size: 4
     object    1: data: '\x01\x00\x00\x00'
+```
 
 该测试用例表明`\x00\x00\x00\x00`作为第一个参数传递给了echo. 但是`.ktest`文件一般来说都不是用来看的.
 对于POSIX runtime, 我们提供了一个工具klee-replay, 它可以用来读取`.ktest`文件并调用应用程序, 自动向程序传递必要的数据以呈现该测试用例中KLEE所探索的路径.
 
 为了查看他的工作原理, 请返回到我们构建的本地可执行文件目录: 
 
+```bash
     obj-llvm/src$ cd ../../obj-gcov/src
     src$ ls -l echo
     -rwxrwxr-x 1 klee klee 135984 Nov 21 21:58 echo
+```
 
 要使用klee-replay, 我们只需要告诉他要运行的可执行文件和要使用的的`.ktest`文件 . 参数和输入文件等都将从`.ktest`文件中的数据读取.
 
+```bash
     src$ klee-replay ./echo ../../obj-llvm/src/klee-last/test000001.ktest
     klee-replay: TEST CASE: ../../obj-llvm/src/klee-last/test000001.ktest
     klee-replay: ARGS: "./echo" ""
 
     klee-replay: EXIT STATUS: NORMAL (0 seconds)
+```
 
 上面例子中第一行显示正在运行的测试用例, 第二行显示执行的可执行文件以及传递的参数(与`.ktest`文件中相匹配). 最后一行是程序的退出状态和运行时间.
 
@@ -544,13 +582,15 @@ gcov得到的覆盖率明显高于klee-stats得到的覆盖率, 这是因为gcov
 我们可以使用POSIX runtime的`--sym-args`选项来传递多个参数.
 切换回`obj-llvm/src`目录后, 执行以下步骤:
 
+```bash
     src$ klee --only-output-states-covering-new --optimize --libc=uclibc --posix-runtime ./echo.bc --sym-args 0 2 4
     ...
     KLEE: done: total instructions = 7611521
     KLEE: done: completed paths = 10179
     KLEE: done: generated tests = 57
+```
 
-`--sym-args`参数..., Emmmmm懒得解释了直接粘用法吧
+`--sym-args`参数..., emmmmm懒得解释了直接粘用法吧
 
     -sym-args <MIN> <MAX> <N>  - Replace by at least MIN arguments and at most MAX arguments, each with maximum length N
 
@@ -561,6 +601,7 @@ gcov得到的覆盖率明显高于klee-stats得到的覆盖率, 这是因为gcov
 
 我们可以回到`obj-gcov/src`目录运行新得到的测试用例, 并查看覆盖率: 
 
+```bash
     src$ rm -f *.gcda # Get rid of any stale gcov files
     src$ klee-replay ./echo ../../obj-llvm/src/klee-last/*.ktest
     klee-replay: TEST CASE: ../../obj-llvm/src/klee-last/test000001.ktest
@@ -576,6 +617,7 @@ gcov得到的覆盖率明显高于klee-stats得到的覆盖率, 这是因为gcov
     File '../../src/system.h'
     Lines executed:100.00% of 3
     Creating 'system.h.gcov'
+```
 
 ### Step 8 : Using zcov to analyze coverage
 如果想要可视化的覆盖率结果，需要安装zcov工具
