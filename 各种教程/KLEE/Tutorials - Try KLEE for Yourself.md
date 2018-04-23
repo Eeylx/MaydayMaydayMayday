@@ -10,12 +10,21 @@
 
 
 ## 目录:
-[01. First Tutorial](#01-firsttutorial)  
-[02. Second Tutorial]  
-[03. Solving a maze with KLEE]  
-[04. Keygenning with KLEE and Hex-Rays]  
-[05. Keygenning With KLEE]  
-[06. Testing Coreutils](#06-testing-coreutils)  
+1. [First Tutorial](#01-firsttutorial)  
+2. [Second Tutorial]  
+3. [Solving a maze with KLEE]  
+4. [Keygenning with KLEE and Hex-Rays]  
+5. [Keygenning With KLEE]  
+6. [Testing Coreutils](#06-testing-coreutils)  
+    - [Step 1 : Build coreutils with gcov](#step-1--build-coreutils-with-gcov)
+    - [Step 2 : Install WLLVM](#step-2--install-wllvm)
+    - [Step 3 : Build Coreutils with LLVM](#step-3--build-coreutils-with-llvm)
+    - [Step 4 : Using KLEE as an interpreter](#step-4--using-klee-as-an-interpreter)
+    - [Step 5 : Introducing symbolic data to an application](#step-5--introducing-symbolic-data-to-an-application)
+    - [Step 6 : Visualizing KLEE’s progress with KCachegrind](#step-6--visualizing-klees-progress-with-kcachegrind)
+    - [Step 7 : Replaying KLEE generated test cases](#step-7--replaying-klee-generated-test-cases)
+    - [Step 8 : Using zcov to analyze coverage](#step-8--using-zcov-to-analyze-coverage)
+
 [附录1: klee常用函数](#附录1-klee常用函数)  
 [附录2: klee常用命令](附录2-klee常用命令)  
 [附录3: linux编译器相关常用命令](#附录3-linux编译器相关常用命令)  
@@ -678,15 +687,20 @@ Creating 'system.h.gcov'
     *  `klee --libc=uclibc --posix-runtime ./echo.bc --help`
   - 例子
     * `klee --libc=uclibc --posix-runtime ./echo.bc --sym-arg 3`
-    * `klee --libc=uclibc --posix-runtime ./echo.bc --sym-args 0 2 4`
+    * `klee --only-output-states-covering-new --optimize --libc=uclibc --posix-runtime ./echo.bc --sym-args 0 2 4`
 + 用 ktest-tool 工具读取 klee 生成的测试用例
   - `ktest-tool --write-ints klee-last/test000001.ktest`
++ 查看klee生成的统计信息
+  - `klee-stats --print-all klee-last`
++ 使用可视化工具`kcachegrind`查看klee生成的统计信息
+  - `kcachegrind klee-last/run.istats`
 + 使用 klee 官方自带的重放工具重放测试用例
   - `export LD_LIBRARY_PATH=/path-to-your-klee-build-dir/lib/:$LD_LIBRARY_PATH` 添加环境变量
   - `gcc -L /home/eeyore/work/klee-build/lib/ get_sign.c -lkleeRuntest` 选择要重放的程序
   - `KTEST_FILE=klee-last/test000001.ktest ./a.out` 选择要重放的测试用例 
   - `echo $?` 查看运行结果
-+ 
++ 使用`klee-replay`工具重放测试用例
+  - `klee-replay ./echo ../../obj-llvm/src/klee-last/test000001.ktest`
 
 
 ## 附录3: linux编译器相关常用命令
