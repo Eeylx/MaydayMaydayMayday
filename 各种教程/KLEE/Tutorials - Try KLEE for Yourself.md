@@ -25,7 +25,7 @@
 测试一个简单的程序.(使用klee的简单的整个流程)
 
 示例在 `klee/examples` 目录下, 本例子使用 `klee/examples/get_sign`目录下的 `get_sign.c`
-```
+```c++
 /*
  * First KLEE tutorial: testing a small function
  */
@@ -52,9 +52,9 @@ int main() {
 
 #### Marking input as symbolic
 为了使用KLEE测试这个函数, 我们需要将变量标记为符号, 使用 `klee_make_symbolic()` 函数, 该函数接收有三个参数: 
-  + 看作符号的变量地址
-  + 变量大小
-  + 变量名称(任意)
++ 看作符号的变量地址
++ 变量大小
++ 变量名称(任意)
 
 具体例子如上述示例代码的main函数中所示
 
@@ -62,10 +62,10 @@ int main() {
 #### Compiling to LLVM bitcode
 	clang -I ../../include -emit-llvm -c -g get_sign.c
 
-  + `-I` : 使编译器可以找到klee/klee.h  
-  + `-c` : 只将代码编译到目标文件, 而不是可执行文件
-  + `-g` : additional source-level debug information to be stored in the object file, KLEE use to determine source line number information
-  + 不使用任何优化标志, 代码可以稍后进行优化, klee提供了 `--optimize`命令赖在内部运行优化器 
++ `-I` : 使编译器可以找到klee/klee.h  
++ `-c` : 只将代码编译到目标文件, 而不是可执行文件
++ `-g` : additional source-level debug information to be stored in the object file, KLEE use to determine source line number information
++ 不使用任何优化标志, 代码可以稍后进行优化, klee提供了 `--optimize`命令赖在内部运行优化器 
 
 > 以上参数可以使用 `clang --help` 命令查看说明
 
@@ -87,9 +87,9 @@ int main() {
 	KLEE: done: completed paths = 3
 	KLEE: done: generated tests = 3
 
-  + KLEE在程序中探索了三条路径(=0, <0, >0), 并为每条探索路径生成了一个测试用例  
-  + KLEE执行后的输出是一个包含KLEE生成的测试用例的目录(klee-out-0)
-  + KLEE将输出的目录命名为 `klee-out-N` , 其中N是最新的可用数字, 并且生成一个名为 `klee-last` 的符号链接到这个目录
++ KLEE在程序中探索了三条路径(=0, <0, >0), 并为每条探索路径生成了一个测试用例  
++ KLEE执行后的输出是一个包含KLEE生成的测试用例的目录(klee-out-0)
++ KLEE将输出的目录命名为 `klee-out-N` , 其中N是最新的可用数字, 并且生成一个名为 `klee-last` 的符号链接到这个目录
 
 如果你想了解由KLEE生成的文件概况, 请点击[这里](http://klee.github.io/releases/docs/v1.4.0/docs/files/), 本教程只关注由KLEE生成的实际测试文件
 
@@ -109,11 +109,11 @@ KLEE生成的测试用例被写入扩展名为 `.ktest` 的文件中, 这些是�
     object    0: data: 0
 
 每个测试文件中, KLEE都会记录以下参数
-  + 被调用的程序 (get_sign.bc)
-  + 该路径上的符号对象数量 (1个)
-  + 符号对象的名字 (a)
-  + 符号对象的大小 (4)
-  + 数据值 (0)
++ 被调用的程序 (get_sign.bc)
++ 该路径上的符号对象数量 (1个)
++ 符号对象的名字 (a)
++ 符号对象的大小 (4)
++ 数据值 (0)
 
 可以用同样的方法查看 `test000002.ktest` 和 `test000003.ktest` 文件, 可以看到三个测试用例中符号对象a的数据值分别为 0, 16843009, -2147483648, 正好覆盖了三条路径  
 
@@ -637,9 +637,12 @@ gcov得到的覆盖率明显高于klee-stats得到的覆盖率, 这是因为gcov
   - `klee --libc=uclibc --posix-runtime ./cat.bc --version`
 
 
-+ 用3个字符的符号当做输入参数
-  - `klee --libc=uclibc --posix-runtime ./echo.bc --sym-arg 3`
-
++ 用klee自己生成输入参数
+  - 查看用法说明
+    *  `klee --libc=uclibc --posix-runtime ./echo.bc --help`
+  - 例子
+    * `klee --libc=uclibc --posix-runtime ./echo.bc --sym-arg 3`
+    * `klee --libc=uclibc --posix-runtime ./echo.bc --sym-args 0 2 4`
 
 + 用 ktest-tool 工具读取 klee 生成的测试用例
   - `ktest-tool --write-ints klee-last/test000001.ktest`
