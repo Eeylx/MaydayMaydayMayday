@@ -10,15 +10,15 @@
 
 
 ## 目录:
-[01. First Tutorial](#01-firsttutorial-http-klee-github-io-releases-docs-v1-4-0-tutorials-testing-function-)  
+[01. First Tutorial](#01-firsttutorial)  
 [02. Second Tutorial]  
 [03. Solving a maze with KLEE]  
 [04. Keygenning with KLEE and Hex-Rays]  
 [05. Keygenning With KLEE]  
-[06. Testing Coreutils](#06-testing-coreutils-http-klee-github-io-releases-docs-v1-4-0-tutorials-testing-coreutils-)  
-[附录1: klee常用函数](#-1-klee-)  
-[附录2: klee常用命令](#-2-klee-)  
-[附录3: linux编译器相关常用命令](#-3-linux-)  
+[06. Testing Coreutils](#06-testing-coreutils)  
+[附录1: klee常用函数](#附录1-klee常用函数)  
+[附录2: klee常用命令](附录2-klee常用命令)  
+[附录3: linux编译器相关常用命令](#附录3-linux编译器相关常用命令)  
 
 
 ## 01. [FirstTutorial](http://klee.github.io/releases/docs/v1.4.0/tutorials/testing-function/)
@@ -71,7 +71,7 @@ int main() {
 
 该命令会生成 `get_sign.bc` 文件
 
-> 如果使用LLVM2.9构建KLEE, 请使用 `llvm-gcc` 替换 `clang`  
+> 如果使用llvm2.9构建klee, 请使用 `llvm-gcc` 替换 `clang`  
 > `llvm-gcc` 会生成 .o 文件(例如 `get_sign.o` ), 所以后续步骤也需要相应的修改命令
 
 
@@ -180,7 +180,7 @@ echo $?
 ### Step 1 : Build coreutils with gcov
 首先去下个 [coreutils](http://www.gnu.org/software/coreutils/coreutils.html), 推荐下载 [6.11版本(官网教程版本)](http://ftp.gnu.org/gnu/coreutils/).
 
-在使用 LLVM 构建之前, 先构建一个带有 gcov 支持的 coreutils, 稍后将用它来获取 KLEE 生成的测试用例的覆盖信息. 解压并进入刚才下载的 coreutils 目录(coreutils-6.11), 然后执行以下命令 :
+在使用 llvm 构建之前, 先构建一个带有 gcov 支持的 coreutils, 稍后将用它来获取 KLEE 生成的测试用例的覆盖信息. 解压并进入刚才下载的 coreutils 目录(coreutils-6.11), 然后执行以下命令 :
 
 ```bash
 coreutils-6.11$ mkdir obj-gcov
@@ -251,7 +251,7 @@ wllvm提供了4个python可执行文件:
 
     pip install --upgrade wllvm
 
-要想成功执行wllvm, 必须将环境变量`LLVM_COMPILER=clang`设置为底层llvm编译器(dragonegg或者clang), 在本教程中使用clang : 
+要想成功执行wllvm, 必须将环境变量`LLVM_COMPILER`设置为底层llvm编译器(dragonegg或者clang), 在本教程中使用clang : 
 
     export LLVM_COMPILER=clang
 
@@ -290,9 +290,9 @@ There is NO WARRANTY, to the extent permitted by law.
 Written by Torbjorn Granlund and Richard M. Stallman.
 ```
 
-你可能会注意到我们获得的是可执行文件而不是LLVM的bitcode文件, 这是因为WLLVM分两步工作. WLLVM首先调用标准编译器, 然后对每个obj文件调用bitcode编译器生成LLVM的bitcode文件. WLLVM stores the location of the generated bitcode files in a dedicated section of the object file. When object files are linked together, the locations are concatenated to save the locations of all constituent files. 当构建完成后, 可以使用WLLVM的实用工具extract-bc读取专用部分的内容, 并将所有bitcode链接到单个的完整bitcode文件中. 
+你可能会注意到我们获得的是可执行文件而不是llvm的bitcode文件, 这是因为wllvm分两步工作.wllvm首先调用标准编译器, 然后对每个obj文件调用bitcode编译器生成LLVM的bitcode文件. WLLVM stores the location of the generated bitcode files in a dedicated section of the object file. When object files are linked together, the locations are concatenated to save the locations of all constituent files. 当构建完成后, 可以使用WLLVM的实用工具extract-bc读取专用部分的内容, 并将所有bitcode链接到单个的完整bitcode文件中. 
 
-要获得所有Coreutils的LLVM bitcode版本，我们可以在所有可执行文件上调用extract-bc : 
+要获得所有Coreutils的llvm bitcode版本，我们可以在所有可执行文件上调用extract-bc : 
 
 ```bash
 // ln -s /usr/bin/llvm-link-3.4 /usr/bin/llvm-link
@@ -335,7 +335,6 @@ KLEE: done: completed paths = 1
 KLEE: done: generated tests = 1
 ```
 
-{...} 省略了对上面例子的解释, 大致意思是:   
 命令的格式是 klee命令 + klee的参数 + 要执行的命令的.bc文件 + 命令的参数  
 `--libc=uClibc`模拟正常的C库, `--posix--runtime`模拟操作系统级别的POSIX库  
 有一些KLEE输出的附加信息, 这些警告大部分都是无害的, 可以无视掉
@@ -438,7 +437,7 @@ src$ klee-stats klee-last
 ------------------------------------------------------------------------
 ```
 
-ICov是被覆盖到的LLVM指令的百分比, BCov是被覆盖到的分支的百分比. 百分比如此之低的原因是这些数字是通过统计bitcode文件中所有指令或分支来计算的, 其中包括一堆执行不到的库代码. 可以通过增加`--optimize`选项来解决该问题, 这会导致KLEE在执行bitcode文件之前先对其进行优化(删除死代码等).
+ICov是被覆盖到的llvm指令的百分比, BCov是被覆盖到的分支的百分比. 百分比如此之低的原因是这些数字是通过统计bitcode文件中所有指令或分支来计算的, 其中包括一堆执行不到的库代码. 可以通过增加`--optimize`选项来解决该问题, 这会导致KLEE在执行bitcode文件之前先对其进行优化(删除死代码等).
 
 ```bash
 src$ klee --optimize --libc=uclibc --posix-runtime ./echo.bc --sym-arg 3
@@ -656,15 +655,11 @@ Creating 'system.h.gcov'
     * 看作符号的变量地址
     * 变量大小
     * 变量名称(任意)
-
-
 + 只在该表达式为真的路径上探索
   - `klee_assume( arr[size - 1] == '\0' )`
   - 相当于把整个程序包在 if( arr[size - 1] == '\0' ) 的条件判断中
   - 如果该表达式永远不可能为真(即表达式可能是错的), 则klee报告一个错误
   - 尽可能使用简单的表达式, 并使用 `&` 和 `|` ,而不是 `&&` 和 `||`
-
-
 + 强制一个条件成立(断言)
   - `klee_assert()`
   - 可以用该命令标记想要的结果, 例如在成功时的代码后添加`klee_assert(0)` (klee会将其标记为一个错误)
@@ -676,30 +671,21 @@ Creating 'system.h.gcov'
 
 + 使用 klee 对 hello.bc 开始符号执行并生成测试用例
   - `klee hello.bc`
-
-
 + 使用 uClibc c 库和 POSIX
   - `klee --libc=uclibc --posix-runtime ./cat.bc --version`
-
-
 + 用klee自己生成输入参数
   - 查看用法说明
     *  `klee --libc=uclibc --posix-runtime ./echo.bc --help`
   - 例子
     * `klee --libc=uclibc --posix-runtime ./echo.bc --sym-arg 3`
     * `klee --libc=uclibc --posix-runtime ./echo.bc --sym-args 0 2 4`
-
 + 用 ktest-tool 工具读取 klee 生成的测试用例
   - `ktest-tool --write-ints klee-last/test000001.ktest`
-
-
 + 使用 klee 官方自带的重放工具重放测试用例
   - `export LD_LIBRARY_PATH=/path-to-your-klee-build-dir/lib/:$LD_LIBRARY_PATH` 添加环境变量
   - `gcc -L /home/eeyore/work/klee-build/lib/ get_sign.c -lkleeRuntest` 选择要重放的程序
   - `KTEST_FILE=klee-last/test000001.ktest ./a.out` 选择要重放的测试用例 
   - `echo $?` 查看运行结果
-
-
 + 
 
 
@@ -708,8 +694,6 @@ Creating 'system.h.gcov'
 + 将源代码编译为可执行文件
   - `gcc hello.c -o hello.exe`
     * `-o` : 指定生成的输出文件
-
-
 + 将源代码编译为 LLVM IR 字节码
   - `clang -emit-llvm -c -g get_sign.c`
   - `clang -I ../../include -emit-llvm -c -g get_sign.c`
@@ -719,9 +703,29 @@ Creating 'system.h.gcov'
     * `-emit-llvm` : 获得LLVM IR. 对应的 `-emit-obj` 是获得.o目标文件
   - `llvm-gcc -c -emit-llvm maze.c -o maze.bc`
 
+## 附录4: 使用KLEE极简流程
+> 对应命令请酌情修改, 以下只给出参数使用较多的例子
+
+1. 获得`.bc`文件
+    - `clang -I ../../include -emit-llvm -c -g get_sign.c`
+2. 使用klee
+    - `klee get_sign.bc`
+    - `klee --libc=uclibc --posix-runtime ./echo.bc --help`
+    - `klee --libc=uclibc --posix-runtime ./echo.bc --sym-arg 3`
+    - `klee --only-output-states-covering-new --optimize --libc=uclibc --posix-runtime ./echo.bc --sym-args 0 2 4`
+3. 查看测试用例
+    - `ktest-tool --write-ints klee-last/test000001.ktest`
+4. 查看klee生成的统计信息
+    - `klee-stats --print-all klee-last`
+    - `kcachegrind klee-last/run.istats`
+5. 重放
+    - `klee-replay ./echo ../../obj-llvm/src/klee-last/test000001.ktest`
+    - 或使用klee提供的重放库
+
 
 ## NOTE
+1. [要想成功执行wllvm, 必须将环境变量LLVM_COMPILER设置为底层llvm编译](#step-2--install-wllvm)
 
-    export LLVM_COMPILER=clang
+        export LLVM_COMPILER=clang
 
 要使环境变量持久化, 请将上述命令添加到shell脚本中(例如.bashrc等)
