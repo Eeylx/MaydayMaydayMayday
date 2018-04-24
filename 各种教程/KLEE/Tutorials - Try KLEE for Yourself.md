@@ -468,8 +468,7 @@ src$ klee-stats klee-last
 > 吐槽: 部分情况下使用`--optimize`参数会导致错误, 请去除该参数再试试.  
 
 ### Step 6 : Visualizing KLEE’s progress with KCachegrind
-[KCachegrind][]是一个出色的可视化工具, 如果没有安装过, 可以通过对应平台的软件安装工具直接安装(apt-get, yum等).
-[KCachegrind]: http://kcachegrind.sourceforge.net/
+[KCachegrind](http://kcachegrind.sourceforge.net/)是一个出色的可视化工具, 如果没有安装过, 可以通过对应平台的软件安装工具直接安装(apt-get, yum等).
 
     src$ kcachegrind klee-last/run.istats
 
