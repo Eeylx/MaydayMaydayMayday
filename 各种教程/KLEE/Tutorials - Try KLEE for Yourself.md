@@ -636,9 +636,9 @@ Creating 'system.h.gcov'
     - 使用KLEE测试CoreUtils的版本, 环境, 测试的CoreUtils指令, 测试时执行的命令等
     - 测试时的可选选项 `klee -xxx -xxx ...`, 以及目前推荐的更新后可选选项
     - 如何生成 `test.env` 和 `/tmp/sandbox`
-    - 测试时使用的命令及参数
-      + `klee --sym-args 0 1 10 --sym-args 0 2 2 --sym-files 1 8 --sym-stdin 8 --sym-stdout`
-    - 对于测试结果不佳的8条指令, 单独调整参数
+    - 测试时使用的参数
+      + `--sym-args 0 1 10 --sym-args 0 2 2 --sym-files 1 8 --sym-stdin 8 --sym-stdout`
+      + 对于测试结果不佳的8条指令, 单独调整参数
     - KLEE OSDI'08 paper中使用的命令及参数
       + `klee --max-time 2 --sym-args 1 10 10 --sym-files 2 2000 --max-fail 1 tr.bc`
 
