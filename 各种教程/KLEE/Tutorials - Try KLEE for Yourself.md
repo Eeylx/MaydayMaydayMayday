@@ -468,7 +468,8 @@ src$ klee-stats klee-last
 > 吐槽: 部分情况下使用`--optimize`参数会导致错误, 请去除该参数再试试.  
 
 ### Step 6 : Visualizing KLEE’s progress with KCachegrind
-[KCachegrind](http://kcachegrind.sourceforge.net/)是一个出色的可视化工具, 如果没有安装过, 可以通过对应平台的软件安装工具直接安装(apt-get, yum等).
+[KCachegrind][]是一个出色的可视化工具, 如果没有安装过, 可以通过对应平台的软件安装工具直接安装(apt-get, yum等).
+[KCachegrind]: http://kcachegrind.sourceforge.net/
 
     src$ kcachegrind klee-last/run.istats
 
@@ -634,22 +635,13 @@ Creating 'system.h.gcov'
 ### Extra : 相关问题及参考
 + [OSDI'08 Coreutils Experiments](http://klee.github.io/docs/coreutils-experiments/)
     - 使用KLEE测试CoreUtils的版本, 环境, 测试的CoreUtils指令, 测试时执行的命令等
-    - 测试时使用的选项 `klee -xxx -xxx ...`, 以及目前推荐的更新后选项
+    - 测试时的可选选项 `klee -xxx -xxx ...`, 以及目前推荐的更新后可选选项
     - 如何生成 `test.env` 和 `/tmp/sandbox`
-    - 测试结果不佳的指令及针对性的测试命令
-
-        $ klee --simplify-sym-indices --write-cvcs --write-cov --output-module \  
-        \--max-memory=1000 --disable-inlining --optimize --use-forked-solver \  
-        \--use-cex-cache --with-libc --with-file-model=release \  
-        \--allow-external-sym-calls --only-output-states-covering-new \  
-        \--exclude-libc-cov --exclude-cov-file=./../lib/functions.txt \  
-        \--environ=test.env --run-in=/tmp/sandbox --output-dir=paste-data-1h \  
-        \--max-sym-array-size=4096 --max-instruction-time=10. --max-time=3600. \  
-        \--watchdog --max-memory-inhibit=false --max-static-fork-pct=1 \  
-        \--max-static-solve-pct=1 --max-static-cpfork-pct=1 --switch-type=internal \  
-        \--randomize-fork --use-random-path --use-interleaved-covnew-NURS \  
-        \--use-batching-search --batch-instructions 10000 --init-env \  
-        ./paste.bc --sym-args 0 1 10 --sym-args 0 2 2 --sym-files 1 8 --sym-stdout
+    - 测试时使用的命令及参数
+      + `klee --sym-args 0 1 10 --sym-args 0 2 2 --sym-files 1 8 --sym-stdin 8 --sym-stdout`
+    - 对于测试结果不佳的8条指令, 单独调整参数
+    - KLEE OSDI'08 paper中使用的命令及参数
+      + `klee --max-time 2 --sym-args 1 10 10 --sym-files 2 2000 --max-fail 1 tr.bc`
 
 
 ## 07. [Using symbolic environment](http://klee.github.io/tutorials/using-symbolic/)
@@ -673,7 +665,6 @@ Creating 'system.h.gcov'
 + 强制一个条件成立(断言)
     - `klee_assert()`
     - 可以用该命令标记想要的结果, 例如在成功时的代码后添加`klee_assert(0)` (klee会将其标记为一个错误)
-
 
 
 ## 附录2: klee常用命令
@@ -717,6 +708,7 @@ Creating 'system.h.gcov'
         * `-g` : 在目标文件中存储额外的源代码级的调试信息
         * `-emit-llvm` : 获得LLVM IR. 对应的 `-emit-obj` 是获得.o目标文件
     - `llvm-gcc -c -emit-llvm maze.c -o maze.bc`
+
 
 ## 附录4: 使用KLEE极简流程
 > 对应命令请酌情修改, 以下只给出参数使用较多的例子
