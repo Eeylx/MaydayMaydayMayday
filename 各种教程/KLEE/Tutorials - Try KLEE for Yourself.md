@@ -10,7 +10,7 @@
 
 
 ## 目录:
-1. [First Tutorial](#01-firsttutorial)  
+1. [First Tutorial](#01.FirstTutorial)  
 2. [Second Tutorial]  
 3. [Solving a maze with KLEE]  
 4. [Keygenning with KLEE and Hex-Rays]  
@@ -26,7 +26,7 @@
     - [Step 8 : Using zcov to analyze coverage](#step-8--using-zcov-to-analyze-coverage)
 
 [附录1: klee常用函数](#附录1-klee常用函数)  
-[附录2: klee常用命令](附录2-klee常用命令)  
+[附录2: klee常用命令](#附录2-klee常用命令)  
 [附录3: linux编译器相关常用命令](#附录3-linux编译器相关常用命令)  
 [附录4: 使用KLEE极简流程](#附录4-使用klee极简流程)
 
