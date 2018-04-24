@@ -60,7 +60,7 @@ int main() {
 ```
 
 
-#### Marking input as symbolic
+### Step 1 : Marking input as symbolic
 为了使用KLEE测试这个函数, 我们需要将变量标记为符号, 使用 `klee_make_symbolic()` 函数, 该函数接收有三个参数: 
 + 看作符号的变量地址
 + 变量大小
@@ -69,7 +69,7 @@ int main() {
 具体例子如上述示例代码的main函数中所示
 
 
-#### Compiling to LLVM bitcode
+### Step 2 : Compiling to LLVM bitcode
 	clang -I ../../include -emit-llvm -c -g get_sign.c
 
 + `-I` : 使编译器可以找到klee/klee.h  
@@ -85,7 +85,7 @@ int main() {
 > `llvm-gcc` 会生成 .o 文件(例如 `get_sign.o` ), 所以后续步骤也需要相应的修改命令
 
 
-#### Running KLEE
+### Step 3 : Running KLEE
 	klee get_sign.bc
 
 可以看到以下输出: 
@@ -106,7 +106,7 @@ KLEE: done: generated tests = 3
 如果你想了解由KLEE生成的文件概况, 请点击[这里](http://klee.github.io/releases/docs/v1.4.0/docs/files/), 本教程只关注由KLEE生成的实际测试文件
 
 
-#### KLEE-generated test cases
+### Step 4 : KLEE-generated test cases
 KLEE生成的测试用例被写入扩展名为 `.ktest` 的文件中, 这些是二进制文件, 可以用 `ktest-tool` 工具读取
 
     ktest-tool --write-ints klee-last/test000001.ktest
@@ -134,7 +134,7 @@ object    0: data: 0
 我们可以在实际程序上运行这些测试用例
 
 
-#### Replaying a test case
+### Step 5 : Replaying a test case
 虽然可以手动运行由KLEE生成的测试用例(或者在现有测试框架的帮助下), 但是KLEE提供了一个方便的重放库, 可以将.ktest文件中对应的变量值赋给函数中由klee_make_symbolic函数指定的符号
 
 要使用它, 只需将程序与libkleeRuntest库连接起来, 并将环境变量 `KTEST_FILE` 设置为要使用的测试用例的名称
