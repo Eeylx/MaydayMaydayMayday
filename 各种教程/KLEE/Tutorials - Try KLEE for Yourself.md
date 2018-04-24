@@ -716,8 +716,7 @@ Creating 'system.h.gcov'
     - `clang -I ../../include -emit-llvm -c -g get_sign.c`
 2. 使用klee
     - `klee get_sign.bc`
-    - `klee --libc=uclibc --posix-runtime ./echo.bc --help`
-    - `klee --libc=uclibc --posix-runtime ./echo.bc --sym-arg 3`
+    - `klee --libc=uclibc --posix-runtime ./echo.bc --help` // 查看将参数符号化的使用说明
     - `klee --only-output-states-covering-new --optimize --libc=uclibc --posix-runtime ./echo.bc --sym-args 0 2 4`
 3. 查看测试用例
     - `ktest-tool --write-ints klee-last/test000001.ktest`
@@ -725,9 +724,13 @@ Creating 'system.h.gcov'
     - `klee-stats --print-all klee-last`
     - `kcachegrind klee-last/run.istats`
 5. 重放
-    - `klee-replay ./echo ../../obj-llvm/src/klee-last/test000001.ktest`
+    - 使用带gcov支持的可执行文件
+        * `rm -f *.gcda`   // 清除陈旧的gcov文件
+        * `klee-replay ./obj-llvm/src/echo ./obj-llvm/src/klee-last/test000001.ktest`
     - 或使用klee提供的重放库
-
+6. 使用gcov查看覆盖率信息
+    - `gcov -b echo`
+    - `cat echo.c.gcov`
 
 ## NOTE
 1. [要想成功执行wllvm, 必须将环境变量LLVM_COMPILER设置为底层llvm编译](#step-2--install-wllvm)
