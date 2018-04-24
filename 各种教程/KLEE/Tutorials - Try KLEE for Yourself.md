@@ -733,7 +733,7 @@ Creating 'system.h.gcov'
     - `cat echo.c.gcov`
 
 ## NOTE
-1. [要想成功执行wllvm, 必须将环境变量LLVM_COMPILER设置为底层llvm编译](#step-2--install-wllvm)
+1. [要想成功执行wllvm, 必须将环境变量LLVM_COMPILER设置为底层llvm编译器](#step-2--install-wllvm)
 
         export LLVM_COMPILER=clang
 
