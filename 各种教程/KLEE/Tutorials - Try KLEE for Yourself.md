@@ -28,6 +28,7 @@
 [附录1: klee常用函数](#附录1-klee常用函数)  
 [附录2: klee常用命令](附录2-klee常用命令)  
 [附录3: linux编译器相关常用命令](#附录3-linux编译器相关常用命令)  
+[附录4: 使用KLEE极简流程](#附录4-使用klee极简流程)
 
 
 ## 01. [FirstTutorial](http://klee.github.io/releases/docs/v1.4.0/tutorials/testing-function/)
