@@ -163,8 +163,8 @@ echo $?
 KTEST_FILE=klee-last/test000003.ktest ./a.out 
 echo $?
 255                                             // 输出结果
- ```
- 
+```
+
 就像预期的那样, 程序在运行三个测试用例的时候分别返回了0, 1 和 -1(255)
 
 
@@ -256,7 +256,7 @@ wllvm提供了4个python可执行文件:
     - 用于从构建好的程序(目标文件, 可执行文件, 库或归档文件)中提取bitcode
 + wllvm-sanity-checker
     - 用于检测配置的疏漏
-  
+
 本教程中使用的wllvm版本是`1.0.17`, 安装wllvm : 
 
     pip install --upgrade wllvm
@@ -373,7 +373,7 @@ usage: (klee_init_env) [options] [program arguments]
 ```
 
 下面的例子使用长度为3个字符的符号参数运行echo: 
- 
+
  ```bash
 src$ klee --libc=uclibc --posix-runtime ./echo.bc --sym-arg 3
 KLEE: NOTE: Using klee-uclibc : /usr/local/lib/klee/runtime/klee-uclibc.bca
@@ -431,7 +431,7 @@ Written by FIXME unknown.                                                       
 KLEE: done: total instructions = 64546
 KLEE: done: completed paths = 25
 KLEE: done: generated tests = 25
-```
+ ```
 
 可以看到KLEE探索了25条路径, 所有路径的输出混合到了一起. 除了显示各种字符串外, echo的`--version`和`--help`参数也被探索到了.
 
@@ -692,9 +692,29 @@ Creating 'system.h.gcov'
     - `echo $?` 查看运行结果
 + 使用`klee-replay`工具重放测试用例
     - `klee-replay ./echo ../../obj-llvm/src/klee-last/test000001.ktest`
++ 查看klee的符号执行过程
+    - `klee -debug-print-instructions`
 
 
-## 附录3: linux编译器相关常用命令
+
+## 附录3: llvm常用工具
+
++ [llvm.org官网](http://llvm.org/)
++ [构建和运行Clang](http://clang.llvm.org/get_started.html)
++ llvm-config
+  + 打印LLVM的各种信息, 包括编译选项, 库, 各种变量等等
++ llvm-dis
+  + 将`.bc`字节码文件反汇编成人类可读的`.ll`文件
+  + 有一个专门的文档介绍LLVM IR : [LLVM Language Reference Manual](https://link.zhihu.com/?target=http%3A//llvm.org/docs/LangRef.html) 
++ llvm-as
+  + 将人类可读的`.ll`文件汇编成`.bc`字节码
++ opt
+  + 在一个`.bc`字节码文件上运行一系列LLVM到LLVM的优化
++ 
+
+
+
+## 附录4: linux编译器相关常用命令
 
 + 将源代码编译为可执行文件
   - `gcc hello.c -o hello.exe`
@@ -724,10 +744,10 @@ Creating 'system.h.gcov'
     - `klee-stats --print-all klee-last`
     - `kcachegrind klee-last/run.istats`
 5. 重放
-    - 使用带gcov支持的可执行文件
+    - 有命令行参数建模的, 使用klee-replay工具
         * `rm -f *.gcda`   // 清除陈旧的gcov文件
         * `klee-replay ./obj-llvm/src/echo ./obj-llvm/src/klee-last/test000001.ktest`
-    - 或使用klee提供的重放库
+    - 没有命令行建模的, 使用klee提供的重放库
 6. 使用gcov查看覆盖率信息
     - `gcov -b echo`
     - `cat echo.c.gcov`

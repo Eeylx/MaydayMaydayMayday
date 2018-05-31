@@ -9,7 +9,6 @@
     Ubuntu 14.04 64-bit
     gcc / g++ 4.8 or later
     cmake 3.0 or later
-    
 
 ## 1. Install dependencies
 	sudo apt-get install
@@ -148,7 +147,6 @@ If you don’t want to run the tests you can skip this step but you will need to
 
 	pip install lit
 
-
 ## 7. (Optional) Install tcmalloc
 By default, KLEE uses malloc_info() to observe and to restrict its memory usage. Due to limitations of malloc_info(), the maximum limit is set to 2 GB. To support bigger limits, KLEE can use TCMalloc as an alternative allocator. It is thus necessary to install TCMalloc:
 
@@ -161,7 +159,6 @@ When configuring KLEE in step 9 pass `-DENABLE_TCMALLOC=ON` to CMake when config
 
 ## 8. Get KLEE source
 	git clone https://github.com/klee/klee.git
-
 
 ## 9. Config KLEE
 KLEE must be built “out of source” so first make a binary build directory. You can create this where ever you like.
@@ -187,7 +184,7 @@ For example if KLEE was being built with STP, the POSIX runtime, klee-uclibc and
 	  -DENABLE_UNIT_TESTS=ON \                       // 6. lit
 	  -DENABLE_TCMALLOC=ON \                         // 7. tcmalloc
 	  <KLEE_SRC_DIRECTORY>                           // 8. get Klee source
-	
+
 For copy (but only for me)
 
 	cmake -DENABLE_SOLVER_STP=ON -DENABLE_POSIX_RUNTIME=ON -DENABLE_KLEE_UCLIBC=ON -DKLEE_UCLIBC_PATH=/home/eeyore/work/klee-uclibc -DGTEST_SRC_DIR=/home/eeyore/work/dependencies/googletest-release-1.7.0 -DENABLE_SYSTEM_TESTS=ON -DENABLE_UNIT_TESTS=ON -DENABLE_TCMALLOC=ON /home/eeyore/work/klee
@@ -218,12 +215,10 @@ This way you can run individual tests or subsets of the suite:
 
 	lit test/regression
 
-
 ## 12. (Optional) Build and run the unit test
 If KLEE was configured with unit tests enabled then you can build and run the unit tests like this.
 
 	make unittests
-
 
 ## 13. You're ready to go! Check the [Tutorials](http://klee.github.io/releases/docs/v1.4.0/tutorials/) page to try KLEE
 
@@ -231,10 +226,10 @@ If KLEE was configured with unit tests enabled then you can build and run the un
 ## NOTE 
 For testing real applications (e.g. Coreutils), you may need to increase your system’s open file limit (ulimit -n). Something between 10000 and 999999 should work. In most cases, the hard limit will have to be increased first, so it is best to directly edit the /etc/security/limits.conf file. or :
 
-    ulimit -s unlimited
-
+    ulimit -s 999999
 
 ## Extra
+
   + clang
     - 如果 `clang` 命令不能使用, 被告知有多个clang版本存在, 可以尝试将 `clang` 命令替换为 `clang-3.4` 
     - 可添加链接指定 `clang` 默认使用clang-3.4版本
@@ -247,5 +242,5 @@ For testing real applications (e.g. Coreutils), you may need to increase your sy
           ln -s /path-to-your-klee-build-dir/bin/klee /usr/bin/klee
           ln -s /path-to-your-klee-build-dir/bin/ktest-tool /usr/bin/ktest-tool
           ...
-          
+      
     - 该目录下有多个可执行文件, 可以按需添加链接
