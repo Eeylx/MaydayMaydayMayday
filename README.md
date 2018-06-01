@@ -17,6 +17,8 @@ I need help! T^T
 ## 各种教程
 [MarkDown的写法](./各种教程/MarkDown/MarkDown的写法.md)
 
+[LLVM简介](./各种教程/LLVM/LLVM.md)
+
 [构建KLEE](./各种教程/KLEE/Building%20KLEE%20with%20LLVM%203.4.md)  
 [使用KLEE](./各种教程/KLEE/Tutorials%20-%20Try%20KLEE%20for%20Yourself.md)
 
