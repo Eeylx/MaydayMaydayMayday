@@ -695,26 +695,7 @@ Creating 'system.h.gcov'
 + 查看klee的符号执行过程
     - `klee -debug-print-instructions`
 
-
-
-## 附录3: llvm常用工具
-
-+ [llvm.org官网](http://llvm.org/)
-+ [构建和运行Clang](http://clang.llvm.org/get_started.html)
-+ llvm-config
-  + 打印LLVM的各种信息, 包括编译选项, 库, 各种变量等等
-+ llvm-dis
-  + 将`.bc`字节码文件反汇编成人类可读的`.ll`文件
-  + 有一个专门的文档介绍LLVM IR : [LLVM Language Reference Manual](https://link.zhihu.com/?target=http%3A//llvm.org/docs/LangRef.html) 
-+ llvm-as
-  + 将人类可读的`.ll`文件汇编成`.bc`字节码
-+ opt
-  + 在一个`.bc`字节码文件上运行一系列LLVM到LLVM的优化
-+ 
-
-
-
-## 附录4: linux编译器相关常用命令
+## 附录3: linux编译器相关常用命令
 
 + 将源代码编译为可执行文件
   - `gcc hello.c -o hello.exe`
