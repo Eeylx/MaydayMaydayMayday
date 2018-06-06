@@ -50,6 +50,82 @@ LLVM IR主要有三种格式: 一种是在内存中的编译中间语言, 一种
 
 
 
+## 3. 编译LLVM + Clang(可选)
+
+### Install dependencies
+
++ [x] `subversion`
++ [x] `gcc/g++ 4.8 or later`
++ [x] `cmake 3.2.2 or later`
++ [x] `libcap-dev`
++ [x] `libncurses5-dev`
++ [x] `python-minimal`
++ [x] `python-pip`
++ [x] `zlib1g-dev`
+
+### 编译
+
+1 - 10步请参考[官网][2]
+
+其中第7步Build LLVM and Clang:
+
++ `mkdir build` (in-tree build is not supported)
+
++ `cd build`
+
++ `cmake -G "Unix Makefiles" ../llvm`
+
++ `make`
+
+在执行make之前, 可以先看一眼[常见错误及解决方法](#常见错误及解决方法)中关于make时内存不足的问题. 
+
+> 编译LLVM+Clang的话, 建议至少有100G硬盘空间和20G内存(算上交换区大小)
+
+
+
+### 常见错误及解决方法
+
++ 如果提示cmake版本过低, 则需要升级cmake版本.
+
+
+通过PPA安装的方法如下: 
+
+```bash
+sudo add-apt-repository ppa:george-edison55/cmake-3.x
+sudo apt-get update
+sudo apt-get install cmake
+cmake --version
+```
+
+
+
++ 如果在`make`的Link阶段出现了`collect2: error: ld terminated with signal 9 [Killed]`这个错误, 则说明内存不足, 需要扩大内存(或者增加虚拟内存/扩大交换区的大小).
+
+linux下扩大交换区大小的方法如下:
+
+```bash
+// 1. Create swap file
+// 其中10GB是文件名可以随便起, count是总大小, 这里是1024*1024*10 = 10G
+sudo dd if=/dev/zero of=/mnt/10GB.swap bs=1024 count=10485760
+sudo chmod 600 /mnt/10GB.swap
+
+// 2. Mount swap file.
+sudo mkswap /mnt/10GB.swap
+
+// 3. Enable swap file.
+sudo swapon /mnt/10GB.swap
+
+// 4. Check
+sudo swapon -s
+
+// 5. Make the change persistent across reboots
+// add `/mnt/10GB.swap none swap sw 0 0` line to /etc/fstab
+```
+
+> 在make阶段, 可以先通过`make -j 9`并行完成, 然后当Link阶段崩溃时, 再通过`make -j 1`来减少链接阶段的内存消耗.
+
+
+
 ## 附录1: LLVM子项目和主要工具
 
 ### 1. 子项目
@@ -129,6 +205,4 @@ LLVM IR主要有三种格式: 一种是在内存中的编译中间语言, 一种
 [5]: http://llvm.org/ "LLVM官网"
 [6]: http://llvm.org/docs/LinkTimeOptimization.html "LLVM Link Time Optimization: Design and Implementation"
 [7]: https://zhuanlan.zhihu.com/p/21889573 "LLVM编译.c文件的流程"
-
-
 
