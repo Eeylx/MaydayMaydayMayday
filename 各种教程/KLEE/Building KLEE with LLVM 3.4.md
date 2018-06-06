@@ -22,30 +22,40 @@
   + [x] `python-pip`
   + [x] `unzip`
 
-
 ## 2. Install LLVM 3.4
+
 See [Getting Started with the LLVM System](http://llvm.org/docs/GettingStarted.html) for more information.  
 If you want to install it manually, please refer to the official [LLVM Getting Started documentation](http://releases.llvm.org/3.4.2/docs/GettingStarted.html).
 
-1. ##### 打开apt-get资源文件
-       gedit /etc/apt/sources.list
+#### 1. 打开apt-get资源文件
 
-2. ##### 在source.lsit中添加以下信息后保存关闭:	
-       deb http://llvm.org/apt/trusty/ llvm-toolchain-trusty-3.4 main  
-       deb-src http://llvm.org/apt/trusty/ llvm-toolchain-trusty-3.4 main
+  ```bash
+   gedit /etc/apt/sources.list
+  ```
 
-3. ##### 添加仓库密钥
-	   wget -O - http://llvm.org/apt/llvm-snapshot.gpg.key|sudo apt-key add -
-	   sudo apt-get update
+#### 2. 在source.lsit中添加以下信息后保存关闭:
 
-4. ##### 安装llvm3.4
-	   sudo apt-get install
+```bash
+deb http://llvm.org/apt/trusty/ llvm-toolchain-trusty-3.4 main
+deb-src http://llvm.org/apt/trusty/ llvm-toolchain-trusty-3.4 main
+```
+
+#### 3. 添加仓库密钥
+
+```bash
+wget -O - http://llvm.org/apt/llvm-snapshot.gpg.key|sudo apt-key add -
+sudo apt-get update
+```
+
+#### 4. 安装llvm3.4
+
+     sudo apt-get install
   + [x] `clang-3.4`
   + [x] `llvm-3.4`
   + [x] `llvm-3.4-dev`
   + [x] `llvm-3.4-tools`
 
-5. ##### Finally, make sure llvm-config is in your path
+#### 5. Finally, make sure llvm-config is in your path
        sudo ln -sf /usr/bin/llvm-config-3.4 /usr/bin/llvm-config
 
 
