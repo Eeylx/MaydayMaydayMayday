@@ -91,7 +91,7 @@ KLEE supports multiple different constraint solvers. You must install at least o
 
   + ##### 可能遇到的问题及可行的解决方法
     - 在执行上述命令时可能会因为cmake版本低于3.x而导致部分错误, 可以通过以下命令安装更新版本的cmake解决  
-      [[参考资料1](http://blog.csdn.net/geek_tank/article/details/70175905)] [[参考资料2](http://cameo54321.blogspot.jp/2014/02/installing-cmake-288-or-higher-on.html)]
+      [参考资料1](http://blog.csdn.net/geek_tank/article/details/70175905) [参考资料2](http://cameo54321.blogspot.jp/2014/02/installing-cmake-288-or-higher-on.html)
 		   apt-get install software-properties-common
 		   add-apt-repository ppa:george-edison55/cmake-3.x
 		   apt-get update
@@ -244,3 +244,7 @@ For testing real applications (e.g. Coreutils), you may need to increase your sy
           ...
       
     - 该目录下有多个可执行文件, 可以按需添加链接
+
+[[参考资料2]: 
+
+[ [参考资料2]:
