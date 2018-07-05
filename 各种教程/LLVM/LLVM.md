@@ -142,6 +142,8 @@ sudo swapon -s
 
 ### 2. 主要工具
 
+详细信息请参考官网[LLVM Command Guide][8]
+
 + llvm-config
   + 打印出配置时 LLVM 编译选项、库、等等 
 + llvm-as
@@ -205,4 +207,5 @@ sudo swapon -s
 [5]: http://llvm.org/ "LLVM官网"
 [6]: http://llvm.org/docs/LinkTimeOptimization.html "LLVM Link Time Optimization: Design and Implementation"
 [7]: https://zhuanlan.zhihu.com/p/21889573 "LLVM编译.c文件的流程"
+[8]: http://llvm.org/docs/CommandGuide/index.html "LLVM命令指南"
 
