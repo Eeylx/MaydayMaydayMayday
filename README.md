@@ -24,6 +24,8 @@ I need help! T^T
 
 [配置PM2 (Node.js进程管理工具)](./各种教程/PM2/PM2.md)
 
+
+
 ## 配置环境
 + ### Linux
     [linux 更换apt-get源](./配置环境/Linux/更换apt-get源/更换apt-get源.md)  
@@ -34,12 +36,16 @@ I need help! T^T
     [安装Node.js](./配置环境/Windows/安装Node.js/安装Node.js.md)
 
 
+
 ## 各种算法
+
 
 
 ## 编程题
  + [x] [爬山](./编程题/爬山/爬山.md)
  + [ ] [排队](./编程题/排队/排队.md)
+
+
 
 ## todoList
 
@@ -63,6 +69,8 @@ I need help! T^T
   + [ ] [约束求解]()
   
 ### done
+  - [x] 如何写一个clang plugin
+  - [x] 构建llvm + clang
   - [x] 构建Klee工具
   - [x] 更换make版本
   - [x] markdown教程
