@@ -1,4 +1,10 @@
+[TOC]
+
+
+
 # How to write RecursiveASTVisitor based ASTFrontendActions
+
+> 本文档基于Clang7教程, 请注意对应版本
 
 ## Introduction
 
@@ -229,7 +235,7 @@ Found declaration at 1:29
 
 Clang插件可以在编译期间运行额外的用户定义的操作. 本文将提供如何编写和运行Clang插件的基本教程.
 
-
+> 本文档基于Clang7教程, 请注意对应版本
 
 ## Introduction
 
