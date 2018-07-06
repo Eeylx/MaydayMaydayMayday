@@ -1,7 +1,3 @@
-[TOC]
-
-
-
 # How to write RecursiveASTVisitor based ASTFrontendActions
 
 > 本文档基于Clang7教程, 请注意对应版本
