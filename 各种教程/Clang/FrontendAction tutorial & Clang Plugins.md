@@ -472,3 +472,14 @@ X("print-fns", "print function names");
 ## 附录
 
 [官网链接](http://clang.llvm.org/docs/ClangPlugins.html)
+
+
+
+# Tutorial for building tools using LibTooling and LibASTMatchers
+
+
+
+## 附录
+
+[官网链接](http://releases.llvm.org/6.0.1/tools/clang/docs/LibASTMatchersTutorial.html)
+
