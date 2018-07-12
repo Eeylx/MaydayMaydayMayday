@@ -56,12 +56,13 @@ LLVM IR主要有三种格式: 一种是在内存中的编译中间语言, 一种
 
 + [x] `subversion`
 + [x] `gcc/g++ 4.8 or later`
-+ [x] `cmake 3.2.2 or later`
++ [x] `cmake 3.4.3 or later`
 + [x] `libcap-dev`
 + [x] `libncurses5-dev`
 + [x] `python-minimal`
 + [x] `python-pip`
 + [x] `zlib1g-dev`
++ [x] `libxml2`
 
 ### 编译
 
@@ -70,12 +71,10 @@ LLVM IR主要有三种格式: 一种是在内存中的编译中间语言, 一种
 其中第7步Build LLVM and Clang:
 
 + `mkdir build` (in-tree build is not supported)
-
 + `cd build`
-
 + `cmake -G "Unix Makefiles" ../llvm`
-
 + `make`
+  + 对于后续针对Clang的开发, 可以只运行`make clang`
 
 在执行make之前, 可以先看一眼[常见错误及解决方法](#常见错误及解决方法)中关于make时内存不足的问题. 
 
@@ -93,7 +92,7 @@ LLVM IR主要有三种格式: 一种是在内存中的编译中间语言, 一种
 ```bash
 sudo add-apt-repository ppa:george-edison55/cmake-3.x
 sudo apt-get update
-sudo apt-get install cmake
+sudo apt-get install cmake3
 cmake --version
 ```
 
