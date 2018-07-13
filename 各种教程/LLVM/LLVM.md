@@ -63,6 +63,7 @@ LLVM IR主要有三种格式: 一种是在内存中的编译中间语言, 一种
 + [x] `python-pip`
 + [x] `zlib1g-dev`
 + [x] `libxml2`
++ [x] `re2c`
 
 ### 编译
 
