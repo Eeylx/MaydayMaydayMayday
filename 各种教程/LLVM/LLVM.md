@@ -83,6 +83,10 @@ LLVM IR主要有三种格式: 一种是在内存中的编译中间语言, 一种
 
 
 
+[另一种用ninja编译的方法](http://releases.llvm.org/6.0.1/tools/clang/docs/LibASTMatchersTutorial.html)
+
+
+
 ### 常见错误及解决方法
 
 + 如果提示cmake版本过低, 则需要升级cmake版本.
