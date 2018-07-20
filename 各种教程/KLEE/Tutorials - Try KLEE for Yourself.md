@@ -642,9 +642,9 @@ Creating 'system.h.gcov'
     - KLEE OSDI'08 paper中使用的命令及参数
       + `klee --max-time 2 --sym-args 1 10 10 --sym-files 2 2000 --max-fail 1 tr.bc`
 
-
 ## 07. [Using symbolic environment](http://klee.github.io/tutorials/using-symbolic/)
-指导在使用klee进行测试时如何使用 程序的命令行参数 和 符号文件 等符号环境
+
+指导在使用klee进行测试时如何使用 程序的命令行参数 和 符号文件 等符号环境, 有一个小李子
 
 
 

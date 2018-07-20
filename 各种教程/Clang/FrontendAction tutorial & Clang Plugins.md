@@ -1,6 +1,6 @@
 # How to write RecursiveASTVisitor based ASTFrontendActions
 
-> 本文档基于Clang7教程, 请注意对应版本
+> 本文档基于Clang6.0.1, 请注意对应版本
 
 ## Introduction
 
@@ -182,13 +182,37 @@ int main(int argc, char **argv) {
 }
 ```
 
-我们将他存储到名为`FindClassDecls.cpp`的文件中, 并创建以下的CMkaeLists.txt来链接它.
+我们将他存储到名为`FindClassDecls.cpp`的文件中, 并创建以下的`CMkaeLists.txt`来链接它.
 
 ```cmake
+set(LLVM_LINK_COMPONENTS support)
 add_clang_executable(find-class-decls FindClassDecls.cpp)
-
-target_link_libraries(find-class-decls clangTooling)
+target_link_libraries(find-class-decls 
+  PRIVATE
+  clangTooling
+  clangBasic
+  clangASTMatchers
+  )
 ```
+
+
+
+## 构建并使用工具
+
+1. 在`llvm_source/tools/clang/tools/extra/`目录下新建工具文件夹`find-class-decls`, 将上面的两个文件`FindClassDecls.cpp`和`CMakeLists.txt`放到该目录中 
+2. 在工具文件夹上层目录`extra`中的`CMakeLists.txt`文件中添加一行信息
+
+```bash
+add_subdirectory(find-class-decls)
+```
+
+3. 在`llvm_build`目录下执行`make clang`命令
+4. 在`llvm_build`目录下执行`make find-class-decls`命令编译工具
+5. 生成的可执行文件在`./llvm_build/bin/`目录下
+
+> 其中工具目录下的CMakeLists.txt和extra目录下的CMakeLists.txt中的对应信息必须与工具目录的目录名相同, 在本例中对应的是`find-class-decls`. 在`bin`目录下生成的可执行文件也叫这个名字.
+
+
 
 当通过一个小的代码片段运行这个工具时, 它会输出它所找到的所有类`n::m::C`的声明.
 
@@ -219,7 +243,7 @@ Found declaration at 1:29
 
 ## 附录
 
-[官网链接](http://clang.llvm.org/docs/RAVFrontendAction.html)
+[官网链接](http://releases.llvm.org/6.0.1/tools/clang/docs/RAVFrontendAction.html)
 
 
 
@@ -321,7 +345,7 @@ $ clang++ -D_GNU_SOURCE -D_DEBUG -D__STDC_CONSTANT_MACROS \
       -plugin -Xclang print-fns
 ```
 
-另外, 请参阅print-function-name插件示例的[README](# Example : PrintFunctionNames.cpp).
+另外, 请参阅print-function-name插件示例的[README](http://llvm.org/viewvc/llvm-project/cfe/trunk/examples/PrintFunctionNames/README.txt?view=markup)
 
 
 
@@ -471,7 +495,7 @@ X("print-fns", "print function names");
 
 ## 附录
 
-[官网链接](http://clang.llvm.org/docs/ClangPlugins.html)
+[官网链接](http://releases.llvm.org/6.0.1/tools/clang/docs/ClangPlugins.html)
 
 
 
