@@ -30,7 +30,7 @@ I need help! T^T
 + ### Linux
     [linux 更换apt-get源](./配置环境/Linux/更换apt-get源/更换apt-get源.md)  
     [更换make版本](./配置环境/Linux/更换make版本/更换make版本.md)  
-    
+    [将目录添加到系统路径PATH](./配置环境/Linux/将目录添加到系统路径PATH/How%20to%20add%20directory%20to%20system%20path%20in%20Linux.md)
 
 + ### Windows
     [安装Node.js](./配置环境/Windows/安装Node.js/安装Node.js.md)
