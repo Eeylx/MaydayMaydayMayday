@@ -1,6 +1,10 @@
 # How to write RecursiveASTVisitor based ASTFrontendActions
 
 > 本文档基于Clang6.0.1, 请注意对应版本
+>
+> 想要知道如何编译llvm和clang, 请参照[此文档](http://clang.llvm.org/get_started.html)
+
+
 
 ## Introduction
 
@@ -345,7 +349,26 @@ $ clang++ -D_GNU_SOURCE -D_DEBUG -D__STDC_CONSTANT_MACROS \
       -plugin -Xclang print-fns
 ```
 
-另外, 请参阅print-function-name插件示例的[README](http://llvm.org/viewvc/llvm-project/cfe/trunk/examples/PrintFunctionNames/README.txt?view=markup)
+另外, 请参阅print-function-name插件示例的[README](http://llvm.org/viewvc/llvm-project/cfe/trunk/examples/PrintFunctionNames/README.txt?view=markup): 
+
+```bash
+# This is a simple example demonstrating how to use clang's facility for 
+# providing AST consumers using a plugin.
+
+# Build the plugin by running `make` in this directory.
+
+# Once the plugin is built, you can run it using:
+# --
+# Linux:
+$ clang -cc1 -load ../../Debug+Asserts/lib/libPrintFunctionNames.so -plugin print-fns some-input-file.c
+$ clang -cc1 -load ../../Debug+Asserts/lib/libPrintFunctionNames.so -plugin print-fns -plugin-arg-print-fns help -plugin-arg-print-fns --example-argument some-input-file.c
+$ clang -cc1 -load ../../Debug+Asserts/lib/libPrintFunctionNames.so -plugin print-fns -plugin-arg-print-fns -an-error some-input-file.c
+
+# Mac:
+$ clang -cc1 -load ../../Debug+Asserts/lib/libPrintFunctionNames.dylib -plugin print-fns some-input-file.c
+$ clang -cc1 -load ../../Debug+Asserts/lib/libPrintFunctionNames.dylib -plugin print-fns -plugin-arg-print-fns help -plugin-arg-print-fns --example-argument some-input-file.c
+$ clang -cc1 -load ../../Debug+Asserts/lib/libPrintFunctionNames.dylib -plugin print-fns -plugin-arg-print-fns -an-error some-input-file.c
+```
 
 
 
@@ -359,6 +382,16 @@ PluginASTAction::ActionType getActionType() override {
     return AddAfterMainAction;
 }
 ```
+
+
+
+## 构建并使用工具
+
+1. 进入你构建llvm和clang的目录`llvm_build`
+2. 在`tools/clang/examples/PrintFunctionNames`目录下执行`make PrintFunctionNames`命令
+3. 编译完成后, 执行`./bin/clang -cc1 -load ./lib/PrintFunctionNames.so -plugin print-fns test.c`
+
+
 
 
 
