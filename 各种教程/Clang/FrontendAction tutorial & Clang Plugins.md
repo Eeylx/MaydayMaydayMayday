@@ -1,4 +1,4 @@
-# How to write RecursiveASTVisitor based ASTFrontendActions
+# 1. How to write RecursiveASTVisitor based ASTFrontendActions
 
 > 本文档基于Clang6.0.1, 请注意对应版本
 >
@@ -257,7 +257,7 @@ Found declaration at 1:29
 
 
 
-# Clang Plugins
+# 2. Clang Plugins
 
 Clang插件可以在编译期间运行额外的用户定义的操作. 本文将提供如何编写和运行Clang插件的基本教程.
 
@@ -534,7 +534,284 @@ X("print-fns", "print function names");
 
 
 
-# Tutorial for building tools using LibTooling and LibASTMatchers
+
+
+
+
+# 3. Tutorial for building tools using LibTooling and LibASTMatchers
+
+
+
+## Example1 : Matcher
+
+```cpp
+// Declares clang::SyntaxOnlyAction.
+#include "clang/Frontend/FrontendActions.h"
+#include "clang/Tooling/CommonOptionsParser.h"
+#include "clang/Tooling/Tooling.h"
+
+// Declares llvm::cl::extrahelp.
+#include "llvm/Support/CommandLine.h"
+
+using namespace clang::tooling;
+using namespace llvm;
+
+// eey - add matchers
+#include "clang/ASTMatchers/ASTMatchers.h"
+#include "clang/ASTMatchers/ASTMatchFinder.h"
+#include "clang/AST/ASTContext.h"
+
+using namespace clang;
+using namespace clang::ast_matchers;
+
+// definie a matcher, give the matcher a name and bind the forStmt
+StatementMatcher LoopMatcher =
+    forStmt(
+            hasLoopInit(declStmt(hasSingleDecl(varDecl(
+                                                        hasInitializer(integerLiteral(equals(0)))
+                                                      ).bind("initVarName")))),
+            hasIncrement(unaryOperator(
+                hasOperatorName("++"),
+                hasUnaryOperand(declRefExpr(to(varDecl(
+                                                        hasType(isInteger())
+                                                      ).bind("incVarName")))))),
+            hasCondition(binaryOperator(
+                hasOperatorName("<"),
+                hasLHS(ignoringParenImpCasts(declRefExpr(to(varDecl(
+                                                                     hasType(isInteger())
+                                                                   ).bind("condVarName"))))),
+                hasRHS(expr(hasType(isInteger())))))
+           ).bind("forLoop");
+
+
+
+class LoopPrinter : public MatchFinder::MatchCallback {
+public :
+  virtual void run(const MatchFinder::MatchResult &Result) {
+    ASTContext *Context = Result.Context;
+    const ForStmt *FS = Result.Nodes.getNodeAs<ForStmt>("forLoop");
+    // We do not want to convert header files!
+    if (!FS || !Context->getSourceManager().isWrittenInMainFile(FS->getForLoc()))
+      return;
+    const VarDecl *InitVar = Result.Nodes.getNodeAs<VarDecl>("initVarName");
+    const VarDecl *IncVar = Result.Nodes.getNodeAs<VarDecl>("incVarName");
+    const VarDecl *CondVar = Result.Nodes.getNodeAs<VarDecl>("condVarName");
+
+    if (!areSameVariable(InitVar, IncVar) || !areSameVariable(InitVar, CondVar))
+      return;
+    llvm::outs() << "eey ~ Potential array-based loop discovered.\n";
+  }
+
+  static bool areSameVariable(const ValueDecl *First, const ValueDecl *Second) {
+    return First && Second &&
+           First->getCanonicalDecl() == Second->getCanonicalDecl();
+  }
+};
+// eey - end
+
+
+// Apply a custom category to all command-line options so that they are the only ones displayed.
+static llvm::cl::OptionCategory MyToolCategory("my-tool options");
+
+// CommonOptionsParser declares HelpMessage with a description of the common
+// command-line options related to the compilation database and input files.
+// It's nice to have this help message in all tools.
+static cl::extrahelp CommonHelp(CommonOptionsParser::HelpMessage);
+
+// A help message for this specific tool can be added afterwards.
+static cl::extrahelp MoreHelp("\nMore help text...");
+
+int main(int argc, const char **argv) {
+
+  // CommonOptionsParser constructor will parse arguments and create a CompilationDatabase.
+  // In case of error it will terminate the program.
+  CommonOptionsParser OptionsParser(argc, argv, MyToolCategory);
+  // Use OptionsParser.getCompilations() and OptionsParser.getSourcePathList()
+  // to retrieve CompilationDatabase and the list of input file paths.
+  ClangTool Tool(OptionsParser.getCompilations(), OptionsParser.getSourcePathList());
+
+  // eey - add matcher
+  LoopPrinter Printer;
+  MatchFinder Finder;
+  Finder.addMatcher(LoopMatcher, &Printer);
+  // eey - end
+
+  // The ClangTool needs a new FrontendAction for each translation unit we run on.
+  // Thus, it takes a FrontendActionFactory as parameter.  
+  // To create a FrontendActionFactory from a given FrontendAction type, 
+  // we call newFrontendActionFactory<clang::SyntaxOnlyAction>().
+  return Tool.run(newFrontendActionFactory(&Finder).get());
+}
+```
+
+
+
+## Example2 : AST visitor
+
+```cpp
+//------------------------------------------------------------------------------
+// Tooling sample. Demonstrates:
+//
+// * How to write a simple source tool using libTooling.
+// * How to use RecursiveASTVisitor to find interesting AST nodes.
+// * How to use the Rewriter API to rewrite the source code.
+//
+// Eli Bendersky (eliben@gmail.com)
+// This code is in the public domain
+//------------------------------------------------------------------------------
+#include <sstream>
+#include <string>
+
+#include "clang/AST/AST.h"
+#include "clang/AST/ASTConsumer.h"
+#include "clang/AST/RecursiveASTVisitor.h"
+#include "clang/Frontend/ASTConsumers.h"
+#include "clang/Frontend/CompilerInstance.h"
+#include "clang/Frontend/FrontendActions.h"
+#include "clang/Rewrite/Core/Rewriter.h"
+#include "clang/Tooling/CommonOptionsParser.h"
+#include "clang/Tooling/Tooling.h"
+#include "llvm/Support/raw_ostream.h"
+
+using namespace clang;
+using namespace clang::driver;
+using namespace clang::tooling;
+
+static llvm::cl::OptionCategory ToolingSampleCategory("Tool Sample");
+
+/* 功能: 在函数前后增加注释, 并在if后增加注释,  例如:
+**before:
+**
+** void foo(int* a, int *b) {
+**   if (a[0] > 1) {
+**     b[0] = 2;
+**   }
+** }
+**-------------------------------------- 
+**after:
+**
+** // Begin function foo returning void
+** void foo(int* a, int *b) {
+**   if (a[0] > 1) // the 'if' part
+**   {
+**     b[0] = 2;
+**   }
+** }
+** // End function foo
+*/
+
+																			// RecursiveASTVisitor
+// 遍历源码 & 执行相应修改
+// 实现 RecursiveASTVisitor , 可以通过重写相关方法来指定感兴趣的AST结点
+class MyASTVisitor : public RecursiveASTVisitor<MyASTVisitor> {
+public:
+  MyASTVisitor(Rewriter &R) : TheRewriter(R) {}
+
+  // 在if语句后增加注释
+  bool VisitStmt(Stmt *s) {
+	// 只关心 if 语句
+    if (isa<IfStmt>(s)) {
+      IfStmt *IfStatement = cast<IfStmt>(s);
+      Stmt *Then = IfStatement->getThen();
+
+      TheRewriter.InsertText(Then->getLocStart(), "// the 'if' part\n", true, true);
+
+      Stmt *Else = IfStatement->getElse();
+      if (Else)
+        TheRewriter.InsertText(Else->getLocStart(), "// the 'else' part\n", true, true);
+    }
+
+    return true;
+  }
+
+  bool VisitFunctionDecl(FunctionDecl *f) {
+	// 只针对函数定义(拥有函数体), 忽视函数声明
+    if (f->hasBody()) {
+      Stmt *FuncBody = f->getBody();
+
+      // Type name as string
+      QualType QT = f->getReturnType();
+      std::string TypeStr = QT.getAsString();
+
+      // Function name
+      DeclarationName DeclName = f->getNameInfo().getName();
+      std::string FuncName = DeclName.getAsString();
+
+      // Add comment before
+      std::stringstream SSBefore;
+      SSBefore << "// Begin function " << FuncName << " returning " << TypeStr
+               << "\n";
+      SourceLocation ST = f->getSourceRange().getBegin();
+      TheRewriter.InsertText(ST, SSBefore.str(), true, true);
+
+      // And after
+      std::stringstream SSAfter;
+      SSAfter << "\n// End function " << FuncName;
+      ST = FuncBody->getLocEnd().getLocWithOffset(1);
+      TheRewriter.InsertText(ST, SSAfter.str(), true, true);
+    }
+
+    return true;
+  }
+
+private:
+  Rewriter &TheRewriter;
+};
+																						// ASTConsumer
+// 实现 ASTConsumer 接口, 读取Clang解析器生成的AST信息
+class MyASTConsumer : public ASTConsumer {
+public:
+  MyASTConsumer(Rewriter &R) : Visitor(R) {}
+
+  // Override the method that gets called for each parsed top-level declaration.
+  bool HandleTopLevelDecl(DeclGroupRef DR) override {
+    for (DeclGroupRef::iterator b = DR.begin(), e = DR.end(); b != e; ++b) {
+	  // 使用我们的 AST visitor 遍历声明
+      Visitor.TraverseDecl(*b);
+      (*b)->dump();
+    }
+    return true;
+  }
+
+private:
+  MyASTVisitor Visitor;
+};
+																						// ASTFrontendAction
+// Clang Libtooling 的入口点
+// 对于提供给工具的每一个源文件, 创建一个新的 FrontendAction
+class MyFrontendAction : public ASTFrontendAction {
+public:
+  MyFrontendAction() {}
+  void EndSourceFileAction() override {
+    SourceManager &SM = TheRewriter.getSourceMgr();
+    llvm::errs() << "** EndSourceFileAction for: " << SM.getFileEntryForID(SM.getMainFileID())->getName() << "\n";
+
+	// 将缓冲区的内容写入文件 (Now emit the rewritten buffer)
+    TheRewriter.getEditBuffer(SM.getMainFileID()).write(llvm::outs());
+  }
+
+  std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI, StringRef file) override {
+    llvm::errs() << "** Creating AST consumer for: " << file << "\n";
+    TheRewriter.setSourceMgr(CI.getSourceManager(), CI.getLangOpts());
+    return llvm::make_unique<MyASTConsumer>(TheRewriter);
+  }
+
+private:
+  Rewriter TheRewriter;
+};
+																						// Main
+int main(int argc, const char **argv) {
+  CommonOptionsParser op(argc, argv, ToolingSampleCategory);
+  ClangTool Tool(op.getCompilations(), op.getSourcePathList());
+
+  // ClangTool::run accepts a FrontendActionFactory, which is then used to
+  // create new objects implementing the FrontendAction interface. Here we use
+  // the helper newFrontendActionFactory to create a default factory that will
+  // return a new MyFrontendAction object every time.
+  // To further customize this, we could create our own factory class.
+  return Tool.run(newFrontendActionFactory<MyFrontendAction>().get());
+}
+```
 
 
 
@@ -542,3 +819,70 @@ X("print-fns", "print function names");
 
 [官网链接](http://releases.llvm.org/6.0.1/tools/clang/docs/LibASTMatchersTutorial.html)
 
+
+
+
+
+
+
+# 4. 总结 - 在构建好的 LLVM+Clang 中添加 Clang LibTooling 的步骤
+
+> 以下所有目录均为示意, 可能会使用不完整的路径或多写路径, 意在清晰地展示目录信息, 请勿完全照搬硬敲.
+>
+> 路径均基于 llvm 的源码路径 `llvm_source` 和 llvm 的编译路径 `llvm_build`
+
+1. 在`llvm_source/tools/clang/tools/extra`下建立工具文件夹
+
+   + `cd llvm_source/tools/clang/tools/extra`
+
+   + `mkdir eey-tool-sample`
+
+2. 在`llvm_source/tools/clang/tools/extra`目录下的`CMakeLists.txt`文件中添加工具文件夹信息
+
+   + `echo 'add_subdirectory(eey-tool-sample)' >> clang/tools/extra/CMakeLists.txt`
+
+3. 在工具文件夹`eey-tool-sample`下建立工具自己的`CMakeLists.txt`
+
+   + `cd eey-tool-sample`
+
+   + `vim CMakeLists.txt`
+
+   + input :
+
+     ```bash
+     set(LLVM_LINK_COMPONENTS 
+       support
+       )
+     
+     add_clang_executable(eey-tool-sample
+       ToolSample.cpp
+       )
+     target_link_libraries(eey-tool-sample
+       PRIVATE
+     
+       clangTooling
+       clangBasic
+       clangASTMatchers
+       )
+     ```
+
+     > 以上只是示例, 请根据实际需求增删
+
+   + 注意, 其中的`eey-tool-sample`要与工具文件夹名对应; `ToolSample.cpp`要与实际编写代码的文件名对应
+
+4. 编写`ToolSample.cpp`
+
+5. 进入`llvm_build`目录, 编译工具
+
+   + `cd llvm_build`
+   + `cmake -G "Unix Makefiles" ../llvm_source`
+   + `make clang`
+   + `make eey-tool-sample`
+
+6. 使用工具
+
+   + `./llvm_build/bin/eey-tool-sample test.cpp --`
+
+   > 其中`--`是告诉clang该插件使用自定义参数, 第二个`-`表示目前暂时不需要参数
+
+7. 
