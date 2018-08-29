@@ -1,3 +1,9 @@
+[TOC]
+
+
+
+
+
 # 1. How to write RecursiveASTVisitor based ASTFrontendActions
 
 > 本文档基于Clang6.0.1, 请注意对应版本
@@ -269,7 +275,7 @@ Clang插件通过代码运行`FrontendActions`. 请参阅[FrontendAction tutoria
 
 
 
-## Writing a `PluginASTAction`
+## Writing a PluginASTAction
 
 与写一个普通的`FrontendAction`的区别在于, `PluginASTAction`可以处理插件的命令行选项. `PluginASTAction`类声明了一个`ParseArgs`方法, 你必须在你的插件中实现该方法.
 
@@ -556,7 +562,6 @@ X("print-fns", "print function names");
 using namespace clang::tooling;
 using namespace llvm;
 
-// eey - add matchers
 #include "clang/ASTMatchers/ASTMatchers.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
 #include "clang/AST/ASTContext.h"
@@ -565,10 +570,11 @@ using namespace clang;
 using namespace clang::ast_matchers;
 
 // definie a matcher, give the matcher a name and bind the forStmt
+// for(int i=0;i<n;i++) { }
 StatementMatcher LoopMatcher =
     forStmt(
             hasLoopInit(declStmt(hasSingleDecl(varDecl(
-                                                        hasInitializer(integerLiteral(equals(0)))
+                                                    hasInitializer(integerLiteral(equals(0)))
                                                       ).bind("initVarName")))),
             hasIncrement(unaryOperator(
                 hasOperatorName("++"),
@@ -582,8 +588,6 @@ StatementMatcher LoopMatcher =
                                                                    ).bind("condVarName"))))),
                 hasRHS(expr(hasType(isInteger())))))
            ).bind("forLoop");
-
-
 
 class LoopPrinter : public MatchFinder::MatchCallback {
 public :
@@ -607,8 +611,6 @@ public :
            First->getCanonicalDecl() == Second->getCanonicalDecl();
   }
 };
-// eey - end
-
 
 // Apply a custom category to all command-line options so that they are the only ones displayed.
 static llvm::cl::OptionCategory MyToolCategory("my-tool options");
@@ -630,11 +632,9 @@ int main(int argc, const char **argv) {
   // to retrieve CompilationDatabase and the list of input file paths.
   ClangTool Tool(OptionsParser.getCompilations(), OptionsParser.getSourcePathList());
 
-  // eey - add matcher
   LoopPrinter Printer;
   MatchFinder Finder;
   Finder.addMatcher(LoopMatcher, &Printer);
-  // eey - end
 
   // The ClangTool needs a new FrontendAction for each translation unit we run on.
   // Thus, it takes a FrontendActionFactory as parameter.  
@@ -692,7 +692,7 @@ static llvm::cl::OptionCategory ToolingSampleCategory("Tool Sample");
 **
 ** // Begin function foo returning void
 ** void foo(int* a, int *b) {
-**   if (a[0] > 1) // the 'if' part
+**   if (a[0] > 1)   // the 'if' part
 **   {
 **     b[0] = 2;
 **   }
@@ -758,7 +758,7 @@ private:
   Rewriter &TheRewriter;
 };
 																						// ASTConsumer
-// 实现 ASTConsumer 接口, 读取Clang解析器生成的AST信息
+// 实现 ASTConsumer 接口, 读取 Clang parser 生成的AST信息
 class MyASTConsumer : public ASTConsumer {
 public:
   MyASTConsumer(Rewriter &R) : Visitor(R) {}
