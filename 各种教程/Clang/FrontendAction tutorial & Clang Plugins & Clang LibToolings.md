@@ -886,3 +886,84 @@ int main(int argc, const char **argv) {
    > 其中`--`是告诉clang该插件使用自定义参数, 第二个`-`表示目前暂时不需要参数
 
 7. 
+
+
+
+
+
+# 5. 附录
+
+一些很有用的资料, 待整理.
+
+
+
++ [打造基于Clang LibTooling的iOS自动打点系统CLAS（二）](https://www.cnblogs.com/dechaos/p/7423703.html)
+  + 有一张很好的遍历Clang AST时执行顺序的架构图
+    + 来自于[Clang之语法抽象语法树AST](https://www.cnblogs.com/zhangke007/p/4714245.html)
+  + 写一个Clang Libtooling的大致结构
+  + 每一个部分的功能介绍
++ 
+
+
+
+
+
+# 6. Clang LibTooling函数
+
+### [Rewriter](http://clang.llvm.org/doxygen/classclang_1_1Rewriter.html) rewriter
+
++ bool [InsertText](http://clang.llvm.org/doxygen/classclang_1_1Rewriter.html#a5fd6f665d719a8f2dbd6a6e6b5e1436b) ([SourceLocation](http://clang.llvm.org/doxygen/classclang_1_1SourceLocation.html) Loc, StringRef Str, [bool](http://clang.llvm.org/doxygen/stdbool_8h.html#abb452686968e48b67397da5f97445f5b) InsertAfter=[true](http://clang.llvm.org/doxygen/stdbool_8h.html#a41f9c5fb8b08eb5dc3edce4dcb37fee7), [bool](http://clang.llvm.org/doxygen/stdbool_8h.html#abb452686968e48b67397da5f97445f5b) indentNewLines=[false](http://clang.llvm.org/doxygen/stdbool_8h.html#a65e9886d74aaee76545e83dd09011727))
+  + InsertText - Insert the specified string at the specified location in the original buffer.
+  + rewriter.InsertText(ifStmt->getLocStart(), insertStr, true, true);
++ bool [InsertTextBefore](http://clang.llvm.org/doxygen/classclang_1_1Rewriter.html#a094c673eba004da45d763cf8def97497) ([SourceLocation](http://clang.llvm.org/doxygen/classclang_1_1SourceLocation.html) Loc, StringRef Str)
+  + InsertText - Insert the specified string at the specified location in the original buffer.
+    + Rewriter.InsertTextBefore(loc, codes)
++ bool [ReplaceText](http://clang.llvm.org/doxygen/classclang_1_1Rewriter.html#afe00ce2338ce67ba76832678f21956ed) ([SourceLocation](http://clang.llvm.org/doxygen/classclang_1_1SourceLocation.html) Start, unsigned OrigLength, StringRef NewStr)
+  + ReplaceText - This method replaces a range of characters in the input buffer with a new string.
+    + rewriter.ReplaceText(func->getLocation(), funcName.length(), newFuncName)
+    + rewriter.ReplaceText(ret->getRetValue()->getLocStart(), 6, "val")
+    + rewriter.ReplaceText(call->getLocStart(), 7, "add5")
++ bool [ReplaceText](http://clang.llvm.org/doxygen/classclang_1_1Rewriter.html#aa09b7ab42115f9ad5e4d0c6300ec617c) ([SourceRange](http://clang.llvm.org/doxygen/classclang_1_1SourceRange.html) range, StringRef NewStr)
+  + ReplaceText - This method replaces a range of characters in the input buffer with a new string.
++ bool [ReplaceText](http://clang.llvm.org/doxygen/classclang_1_1Rewriter.html#ada41b5e0bb2734b0b551e51689e72ff3) ([SourceRange](http://clang.llvm.org/doxygen/classclang_1_1SourceRange.html) range, [SourceRange](http://clang.llvm.org/doxygen/classclang_1_1SourceRange.html) replacementRange)
+  + ReplaceText - This method replaces a range of characters in the input buffer with a new string.
++ std::string [getRewrittenText](http://clang.llvm.org/doxygen/classclang_1_1Rewriter.html#a4a6214bf63a46d77116e49d0dff5691c) ([SourceRange](http://clang.llvm.org/doxygen/classclang_1_1SourceRange.html) Range) const
+  + getRewrittenText - Return the rewritten form of the text in the specified range.
+    + rewriter.getRewrittenText(func->getSourceRange())
++ 
+
+
+
+
+
+### FunctionDecl *func
+
++ func->getNameInfo().getName().getAsString()
+  + 得到函数名
++ [SourceRange](http://clang.llvm.org/doxygen/classclang_1_1SourceRange.html) [getSourceRange](http://clang.llvm.org/doxygen/classclang_1_1FunctionDecl.html#ab75314846feea2be9df083997dd9977e) () const override LLVM_READONLY
+  + Source range that this declaration covers.
+  + func->getSourceRange()
++ 
+
+
+
+### Stmt *st
+
++ if (IfStmt *sIf = dyn_cast<IfStmt>(st))
+  + 判断Stmt的类型
+  + `IfStmt`, `ReturnStmt`, `CallExpr`, 
++ SourceRange getSourceRange()  `clang 6.0`
++ SourceLocation getLocStart()  `clang 6.0`
+  + SourceLocation getBeginLoc()  `clang 8.0`
++ SourceLocation getLocEnd()  `clag 6.0`
+  + SourceLocation getEndLoc()  `clang 8.0`
+
+
+
+### BinaryOperator *binOp
+
++ binOp->getOpcodeStr()
++ binOp->getLHS()
++ binOp->getRHS()
++ binOp->getLHS()->IgnoreParens()
+  + 忽略表达式的括号
