@@ -255,6 +255,3 @@ For testing real applications (e.g. Coreutils), you may need to increase your sy
       
     - 该目录下有多个可执行文件, 可以按需添加链接
 
-[[参考资料2]: 
-
-[ [参考资料2]:
