@@ -6,7 +6,7 @@
 
 > 文章大标题那个参考网址 ~~是个假网址~~ 有部分错误, 有些命令请参考[此网址](https://klee.github.io/tutorials/testing-function/)  
 > 请确保 `clang`, `klee`, `ktest-tools` 等命令都可以使用, 并已链接到系统目录下, 不然敲命令时需要带上命令所在目录  
-> 关于如何构建KLEE请参考 [Building KLEE with LLVM 3.4](https://github.com/Eeylx/MaydayMaydayMayday/blob/master/%E5%90%84%E7%A7%8D%E6%95%99%E7%A8%8B/Building%20KLEE%20with%20LLVM%203.4/Building%20KLEE%20with%20LLVM%203.4.md)  
+> 关于如何构建KLEE请参考 [Building KLEE with LLVM 3.4](https://github.com/Eeylx/MaydayMaydayMayday/blob/master/%E5%90%84%E7%A7%8D%E6%95%99%E7%A8%8B/KLEE/Building%20KLEE%20with%20LLVM%203.4.md)  
 
 
 ## 目录:
